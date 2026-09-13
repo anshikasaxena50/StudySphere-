@@ -165,115 +165,16 @@ Keep the notes easy for a college student to revise.`
         console.error(error);
     }
 }
-/* Handwritten note customization controls */
-.note-options {
-    width: 90%;
-    max-width: 700px;
-    margin: 20px auto;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+const notePages = document.getElementById("notePages");
 
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-}
+if (notePages) {
+    notePages.addEventListener("change", function () {
+        const customPages = document.getElementById("customPages");
 
-.note-options label {
-    font-size: 14px;
-    color: #333;
-    font-weight: bold;
-}
-
-.note-options select,
-.note-options input {
-    width: auto;
-    max-width: none;
-    padding: 8px 10px;
-    margin: 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-#customPages {
-    width: 80px;
-}
-
-/* Different handwritten page backgrounds */
-
-.handwritten-note.plain {
-    background: #ffffff;
-}
-
-.handwritten-note.cream {
-    background: #fff8df;
-}
-
-.handwritten-note.blue {
-    background: #eef7ff;
-}
-
-.handwritten-note.green {
-    background: #effbea;
-}
-
-.handwritten-note.grid {
-    background-color: #fffdf3;
-    background-image:
-        linear-gradient(#c9dceb 1px, transparent 1px),
-        linear-gradient(90deg, #c9dceb 1px, transparent 1px);
-    background-size: 25px 25px;
-}
-
-.handwritten-note.dotted {
-    background-color: #fffdf3;
-    background-image: radial-gradient(#a9c7df 1px, transparent 1px);
-    background-size: 18px 18px;
-}
-
-/* Different handwriting fonts */
-
-.handwritten-note.font-comic {
-    font-family: "Comic Sans MS", cursive;
-}
-
-.handwritten-note.font-segoe {
-    font-family: "Segoe Print", "Bradley Hand", cursive;
-}
-
-.handwritten-note.font-caveat {
-    font-family: "Caveat", "Comic Sans MS", cursive;
-}
-
-.handwritten-note.font-serif {
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-/* Diagram / figure area */
-
-.diagram-container {
-    width: 90%;
-    max-width: 800px;
-    margin: 25px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-    text-align: center;
-}
-
-.diagram-container img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.diagram-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
+        if (this.value === "custom") {
+            customPages.style.display = "inline-block";
+        } else {
+            customPages.style.display = "none";
+        }
+    });
 }
