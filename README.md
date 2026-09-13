@@ -1,1 +1,1 @@
-# AI-Study-Assistant-
+# StudySphere
