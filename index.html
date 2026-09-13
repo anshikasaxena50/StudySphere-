@@ -21,6 +21,54 @@
     <button onclick="askAI()">Ask AI</button>
     <button onclick="makeNotes()">📝 Make Notes</button>
     <button onclick="handwrittenNotes()">✍️ Handwritten Notes</button>
+    <div class="note-options">
+
+    <label>
+        📄 Page:
+        <select id="pageStyle">
+            <option value="lined">Lined</option>
+            <option value="plain">Plain White</option>
+            <option value="cream">Cream</option>
+            <option value="blue">Light Blue</option>
+            <option value="green">Light Green</option>
+            <option value="grid">Grid</option>
+            <option value="dotted">Dotted</option>
+        </select>
+    </label>
+
+    <label>
+        ✍️ Font:
+        <select id="noteFont">
+            <option value="comic">Comic Sans MS</option>
+            <option value="segoe">Segoe Print</option>
+            <option value="caveat">Cursive</option>
+            <option value="serif">Handwritten Serif</option>
+        </select>
+    </label>
+
+    <label>
+        📑 Pages:
+        <select id="notePages">
+            <option value="1">1 Page</option>
+            <option value="2">2 Pages</option>
+            <option value="3">3 Pages</option>
+            <option value="5">5 Pages</option>
+            <option value="custom">Custom</option>
+        </select>
+    </label>
+
+    <input
+        type="number"
+        id="customPages"
+        min="1"
+        max="20"
+        placeholder="Pages"
+        style="display:none;"
+    >
+
+</div>
+
+<button onclick="generateDiagram()">📊 Generate Diagram/Figure</button>
     
     <div id="answer"></div>
 
