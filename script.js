@@ -151,13 +151,34 @@ Keep the notes easy for a college student to revise.`
         if (data.error) {
             answer.innerText = "Error: " + data.error;
         } else {
-            answer.innerHTML = `
-                <div class="handwritten-note">
-                    ${formatAnswer(data.answer)}
-                </div>
-            `;
-        }
+    const pageStyle = document.getElementById("pageStyle").value;
+    const noteFont = document.getElementById("noteFont").value;
+    const pagesChoice = document.getElementById("notePages").value;
 
+    let pageCount;
+
+    if (pagesChoice === "custom") {
+        pageCount = parseInt(
+            document.getElementById("customPages").value
+        ) || 1;
+    } else {
+        pageCount = parseInt(pagesChoice);
+    }
+
+    const content = formatAnswer(data.answer);
+
+    let pagesHTML = "";
+
+    for (let i = 0; i < pageCount; i++) {
+        pagesHTML += `
+            <div class="handwritten-note ${pageStyle} font-${noteFont}">
+                ${content}
+            </div>
+        `;
+    }
+
+    answer.innerHTML = pagesHTML;
+}
     } catch (error) {
         answer.innerText =
             "Unable to create handwritten notes. Please try again.";
