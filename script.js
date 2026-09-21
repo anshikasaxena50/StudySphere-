@@ -121,9 +121,82 @@ async function handwrittenNotes() {
     }
 
     answer.innerText =
-        "✍️ Creating your handwritten notes...";
+        "✍️ Planning and creating your handwritten notes...";
 
     try {
+        const pageStyle = document.getElementById("pageStyle").value;
+        const noteFont = document.getElementById("noteFont").value;
+        const pagesChoice = document.getElementById("notePages").value;
+
+        let pageInstruction = "";
+
+        if (pagesChoice === "auto") {
+            pageInstruction = `
+Decide the appropriate number of pages yourself.
+The number of pages must depend on how much content is
+reasonably required to explain the topic properly.
+Do not make the notes unnecessarily short.
+`;
+        } else if (pagesChoice === "custom") {
+            const customPages =
+                parseInt(document.getElementById("customPages").value) || 1;
+
+            pageInstruction = `
+Create approximately ${customPages} pages of notes.
+Distribute the topic properly across these pages.
+Do not repeat the same content just to fill pages.
+`;
+        } else {
+            pageInstruction = `
+Create approximately ${parseInt(pagesChoice)} pages of notes.
+Distribute the topic properly across these pages.
+Do not repeat the same content just to fill pages.
+`;
+        }
+
+        const prompt = `
+Create detailed handwritten-style study notes for a college student on:
+
+"${question}"
+
+${pageInstruction}
+
+IMPORTANT:
+
+1. First understand the complete topic.
+2. Divide the topic logically into sections.
+3. Each page must contain DIFFERENT content.
+4. Do not repeat content between pages.
+5. Start from basic concepts and gradually move to advanced concepts.
+6. Include definitions, explanations, important points and examples.
+7. Include programs/code where appropriate.
+8. Include formulas where appropriate.
+9. Include important exam points where useful.
+10. End with a short revision/summary section.
+
+FORMAT THE RESPONSE EXACTLY LIKE THIS:
+
+PAGE 1
+[Page 1 title]
+
+[Page 1 content]
+
+PAGE 2
+[Page 2 title]
+
+[Page 2 content]
+
+PAGE 3
+[Page 3 title]
+
+[Page 3 content]
+
+Continue until the entire topic has been properly covered.
+
+Do NOT write anything before PAGE 1.
+Do NOT use HTML.
+`;
+
         const response = await fetch(
             "https://ai-study-assistant.anshikasaxena50.workers.dev",
             {
@@ -132,16 +205,7 @@ async function handwrittenNotes() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    question: `Create clear and short study notes on: ${question}
-
-Include:
-1. Simple definition
-2. Important points
-3. Key concepts
-4. Examples if useful
-5. Short summary
-
-Keep the notes easy for a college student to revise.`
+                    question: prompt
                 })
             }
         );
@@ -150,52 +214,41 @@ Keep the notes easy for a college student to revise.`
 
         if (data.error) {
             answer.innerText = "Error: " + data.error;
-        } else {
-    const pageStyle = document.getElementById("pageStyle").value;
-    const noteFont = document.getElementById("noteFont").value;
-    const pagesChoice = document.getElementById("notePages").value;
+            return;
+        }
 
-    let pageCount;
+        const text = data.answer;
 
-    if (pagesChoice === "custom") {
-        pageCount = parseInt(
-            document.getElementById("customPages").value
-        ) || 1;
-    } else {
-        pageCount = parseInt(pagesChoice);
-    }
+        // Split AI response into individual pages
+        const rawPages = text
+            .split(/PAGE\s+\d+/i)
+            .map(page => page.trim())
+            .filter(page => page.length > 0);
 
-    const content = formatAnswer(data.answer);
+        let pagesHTML = "";
 
-    let pagesHTML = "";
+        rawPages.forEach((page, index) => {
 
-    for (let i = 0; i < pageCount; i++) {
-        pagesHTML += `
-            <div class="handwritten-note ${pageStyle} font-${noteFont}">
-                ${content}
-            </div>
-        `;
-    }
+            const formattedPage = formatAnswer(page);
 
-    answer.innerHTML = pagesHTML;
-}
+            pagesHTML += `
+                <div class="handwritten-note ${pageStyle} font-${noteFont}">
+                    <div class="page-number">
+                        Page ${index + 1}
+                    </div>
+
+                    ${formattedPage}
+                </div>
+            `;
+        });
+
+        answer.innerHTML = pagesHTML;
+
     } catch (error) {
+
         answer.innerText =
             "Unable to create handwritten notes. Please try again.";
 
         console.error(error);
     }
-}
-const notePages = document.getElementById("notePages");
-
-if (notePages) {
-    notePages.addEventListener("change", function () {
-        const customPages = document.getElementById("customPages");
-
-        if (this.value === "custom") {
-            customPages.style.display = "inline-block";
-        } else {
-            customPages.style.display = "none";
-        }
-    });
 }
