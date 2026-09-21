@@ -130,250 +130,309 @@ async function handwrittenNotes() {
     const answer = document.getElementById("answer");
 
     if (!question) {
-        answer.innerText =
-            "Please enter a topic for handwritten notes.";
+        answer.innerText = "Please enter a topic first.";
         return;
     }
 
-    answer.innerText =
-        "✍️ Creating your handwritten notes...";
+    // If settings are not open, show them first
+    const settings = document.getElementById("handwrittenSettings");
+
+    if (settings && settings.style.display === "none") {
+        settings.style.display = "block";
+        return;
+    }
+
+    const pageStyle =
+        document.getElementById("pageStyle")?.value || "plain";
+
+    const noteFont =
+        document.getElementById("noteFont")?.value || "default";
+
+    const pagesChoice =
+        document.getElementById("notePages")?.value || "4";
+
+    let pageCount;
+
+    if (pagesChoice === "custom") {
+        pageCount =
+            parseInt(
+                document.getElementById("customPages")?.value
+            ) || 1;
+    } else {
+        pageCount = parseInt(pagesChoice) || 1;
+    }
+
+    // Safety limit
+    pageCount = Math.max(1, Math.min(pageCount, 10));
+
+    answer.innerHTML =
+        "✍️ Preparing your handwritten notes...";
 
     try {
-        // Get user's settings
-        const pageStyleElement =
-            document.getElementById("pageStyle");
 
-        const noteFontElement =
-            document.getElementById("noteFont");
+        // ==================================================
+        // STEP 1: ASK AI TO PLAN THE TOPIC
+        // ==================================================
 
-        const pagesElement =
-            document.getElementById("notePages");
-
-        const pageStyle =
-            pageStyleElement
-                ? pageStyleElement.value
-                : "plain";
-
-        const noteFont =
-            noteFontElement
-                ? noteFontElement.value
-                : "default";
-
-        const pagesChoice =
-            pagesElement
-                ? pagesElement.value
-                : "auto";
-
-
-        // =========================================
-        // ASK AI FOR DETAILED STUDY CONTENT
-        // =========================================
-
-        const response = await fetch(
+        const planResponse = await fetch(
             "https://ai-study-assistant.anshikasaxena50.workers.dev",
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify({
-                    question:
-                        `Create handwritten-style study notes for:
+                    question: `
+You are planning a detailed handwritten study document.
 
+Topic:
 ${question}
 
-Make the notes detailed enough to cover the topic properly.
+The student wants exactly ${pageCount} pages.
 
-Organize the content in this order when relevant:
-
-1. Introduction
-2. Simple definition
-3. Important concepts
-4. Key points
-5. Syntax / formulas / algorithms
-6. Examples
-7. Advantages and disadvantages
-8. Applications
-9. Important exam points
-10. Short revision summary
-
-Use clear headings and concise points.
+Create a logical study plan for exactly ${pageCount} pages.
 
 IMPORTANT:
-- Do not repeat the same information.
-- Cover the topic from basic to advanced level.
-- Write enough useful content for multiple handwritten study pages when the topic is large.
-- Keep the content suitable for a college student.
-- Make it easy to revise for exams.`
+- Cover the SAME topic throughout.
+- Divide the topic naturally into subtopics.
+- Make the coverage detailed enough for ${pageCount} pages.
+- Do NOT repeat the same subtopic on different pages.
+- Do NOT create unrelated sections.
+- Later pages should continue from earlier pages.
+- For a small topic, go deeper into explanation, examples, algorithms, applications, exam points, etc.
+- For a large topic, cover more relevant subtopics.
+- Each page must have a different purpose.
+
+Return ONLY this format:
+
+PAGE 1: <subtopics for page 1>
+PAGE 2: <subtopics for page 2>
+PAGE 3: <subtopics for page 3>
+
+Continue until PAGE ${pageCount}.
+`
                 })
             }
         );
 
+        const planData = await planResponse.json();
 
-        const data = await response.json();
-
-
-        // =========================================
-        // ERROR HANDLING
-        // =========================================
-
-        if (!response.ok || data.error) {
+        if (!planResponse.ok || planData.error) {
             answer.innerText =
                 "Error: " +
-                (data.error || "Unable to create handwritten notes.");
+                (planData.error || "Unable to plan the notes.");
             return;
         }
 
-        if (!data.answer) {
-            answer.innerText =
-                "The AI did not return any notes.";
-            return;
+        const planText = planData.answer || "";
+
+        // ==================================================
+        // STEP 2: EXTRACT PAGE PLANS
+        // ==================================================
+
+        const pagePlans = [];
+
+        for (let i = 1; i <= pageCount; i++) {
+
+            const regex = new RegExp(
+                `PAGE\\s*${i}\\s*:\\s*([\\s\\S]*?)(?=PAGE\\s*${i + 1}\\s*:|$)`,
+                "i"
+            );
+
+            const match = planText.match(regex);
+
+            pagePlans.push(
+                match
+                    ? match[1].trim()
+                    : `Continue the detailed explanation of ${question}.`
+            );
         }
 
+        // ==================================================
+        // STEP 3: GENERATE EACH PAGE SEPARATELY
+        // ==================================================
 
-        // =========================================
-        // DETERMINE PAGE COUNT
-        // =========================================
+        const generatedPages = [];
 
-        let pageCount;
-
-
-        // AUTO PAGE COUNT
-        if (pagesChoice === "auto") {
-
-            const textLength =
-                data.answer.length;
-
-            if (textLength <= 1800) {
-                pageCount = 1;
-            }
-            else if (textLength <= 3500) {
-                pageCount = 2;
-            }
-            else if (textLength <= 5500) {
-                pageCount = 3;
-            }
-            else if (textLength <= 7500) {
-                pageCount = 4;
-            }
-            else if (textLength <= 9500) {
-                pageCount = 5;
-            }
-            else if (textLength <= 12000) {
-                pageCount = 6;
-            }
-            else if (textLength <= 15000) {
-                pageCount = 8;
-            }
-            else {
-                pageCount = 10;
-            }
-
-        }
-
-        // CUSTOM PAGE COUNT
-        else if (pagesChoice === "custom") {
-
-            const customPages =
-                document.getElementById("customPages");
-
-            pageCount =
-                customPages
-                    ? parseInt(customPages.value)
-                    : 1;
-
-            if (!pageCount || pageCount < 1) {
-                pageCount = 1;
-            }
-
-            if (pageCount > 20) {
-                pageCount = 20;
-            }
-
-        }
-
-        // FIXED PAGE COUNT
-        else {
-
-            pageCount =
-                parseInt(pagesChoice) || 1;
-        }
-
-
-        // =========================================
-        // SPLIT CONTENT INTO DIFFERENT PAGES
-        // =========================================
-
-        const rawText =
-            data.answer.trim();
-
-        // Split mainly by paragraphs
-        let sections =
-            rawText
-                .split(/\n\s*\n/)
-                .map(section => section.trim())
-                .filter(section => section.length > 0);
-
-
-        // If AI didn't create enough paragraphs,
-        // split large sections by lines.
-        if (sections.length < pageCount) {
-
-            sections =
-                rawText
-                    .split(/\n/)
-                    .map(section => section.trim())
-                    .filter(section => section.length > 0);
-        }
-
-
-        // =========================================
-        // CREATE PAGE CONTENT
-        // =========================================
-
-        const pages = [];
-
-        const itemsPerPage =
-            Math.ceil(sections.length / pageCount);
-
+        answer.innerHTML =
+            "✍️ Creating page 1 of " +
+            pageCount +
+            "...";
 
         for (let i = 0; i < pageCount; i++) {
 
-            const start =
-                i * itemsPerPage;
+            const previousPages =
+                generatedPages
+                    .map((page, index) =>
+                        `PAGE ${index + 1}:\n${page}`
+                    )
+                    .join("\n\n");
 
-            const end =
-                start + itemsPerPage;
+            const pageResponse = await fetch(
+                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        question: `
+Create PAGE ${i + 1} of ${pageCount} of detailed handwritten study notes.
 
-            let pageContent =
-                sections.slice(start, end);
+MAIN TOPIC:
+${question}
 
+THIS PAGE SHOULD COVER:
+${pagePlans[i]}
 
-            // If there is no content for this page,
-            // don't create an empty page.
-            if (pageContent.length === 0) {
-                continue;
+${previousPages
+    ? `CONTENT ALREADY COVERED ON PREVIOUS PAGES:
+${previousPages}`
+    : ""}
+
+STRICT RULES:
+
+1. This is page ${i + 1} of ${pageCount}.
+2. Continue naturally from the previous pages.
+3. Do NOT repeat explanations, examples, definitions, or subtopics already covered.
+4. Do NOT copy content from previous pages.
+5. Add NEW useful information.
+6. Keep the content detailed enough to fill one handwritten study page.
+7. Use headings, subheadings and bullet points where useful.
+8. Include examples, syntax, formulas, algorithms or exam points when relevant.
+9. Stay completely focused on the main topic.
+10. Do not mention "page generation" or these instructions.
+11. Do not write a conclusion unless this is the final page.
+
+Return ONLY the content for this page.
+`
+                    })
+                }
+            );
+
+            const pageData =
+                await pageResponse.json();
+
+            if (!pageResponse.ok || pageData.error) {
+                answer.innerText =
+                    "Error while creating page " +
+                    (i + 1) +
+                    ": " +
+                    (pageData.error || "AI request failed.");
+                return;
             }
 
+            const pageContent =
+                (pageData.answer || "").trim();
 
-            pages.push(pageContent.join("\n\n"));
+            if (!pageContent) {
+                answer.innerText =
+                    "The AI returned an empty page.";
+                return;
+            }
+
+            // ==================================================
+            // DUPLICATE CHECK
+            // ==================================================
+
+            const normalizedCurrent =
+                normalizeForDuplicateCheck(pageContent);
+
+            const duplicate =
+                generatedPages.some(page => {
+
+                    const normalizedPrevious =
+                        normalizeForDuplicateCheck(page);
+
+                    return (
+                        normalizedCurrent === normalizedPrevious ||
+                        similarity(
+                            normalizedCurrent,
+                            normalizedPrevious
+                        ) > 0.85
+                    );
+                });
+
+            // If an almost identical page is produced,
+            // ask AI once more for a genuinely different page.
+            if (duplicate) {
+
+                answer.innerHTML =
+                    "✍️ Regenerating page " +
+                    (i + 1) +
+                    " to avoid repetition...";
+
+                const retryResponse = await fetch(
+                    "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            question: `
+Create a NEW and UNIQUE page for a detailed study document.
+
+Topic:
+${question}
+
+Page:
+${i + 1} of ${pageCount}
+
+Planned content:
+${pagePlans[i]}
+
+Previous page content:
+${generatedPages.join("\n\n")}
+
+The previous generated page was too similar.
+
+Create completely NEW information.
+Do not repeat definitions, explanations, examples, or sentences.
+Explore another relevant aspect of the topic.
+Keep it detailed and useful for a college student.
+
+Return ONLY the new page content.
+`
+                        })
+                    }
+                );
+
+                const retryData =
+                    await retryResponse.json();
+
+                if (!retryResponse.ok || retryData.error) {
+                    answer.innerText =
+                        "Error while regenerating page " +
+                        (i + 1) +
+                        ".";
+                    return;
+                }
+
+                generatedPages.push(
+                    (retryData.answer || "").trim()
+                );
+
+            } else {
+
+                generatedPages.push(pageContent);
+            }
+
+            answer.innerHTML =
+                "✍️ Creating page " +
+                (i + 1) +
+                " of " +
+                pageCount +
+                "...";
         }
 
-
-        // =========================================
-        // RENDER PAGES
-        // =========================================
+        // ==================================================
+        // STEP 4: CREATE THE ACTUAL PAGES
+        // ==================================================
 
         let pagesHTML = "";
 
-
-        pages.forEach((pageContent, index) => {
-
-            const formattedContent =
-                formatAnswer(pageContent);
-
+        generatedPages.forEach((content, index) => {
 
             pagesHTML += `
                 <div class="handwritten-note ${pageStyle} font-${noteFont}">
@@ -383,17 +442,14 @@ IMPORTANT:
                     </div>
 
                     <div class="note-content">
-                        ${formattedContent}
+                        ${formatAnswer(content)}
                     </div>
 
                 </div>
             `;
-
         });
 
-
         answer.innerHTML = pagesHTML;
-
 
     } catch (error) {
 
@@ -406,3 +462,69 @@ IMPORTANT:
             "Unable to create handwritten notes. Please try again.";
     }
 }
+
+
+// ==================================================
+// DUPLICATE NORMALIZATION
+// ==================================================
+
+function normalizeForDuplicateCheck(text) {
+
+    return text
+        .toLowerCase()
+        .replace(/[`*_#>\-]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
+// ==================================================
+// SIMPLE SIMILARITY CHECK
+// ==================================================
+
+function similarity(a, b) {
+
+    const wordsA =
+        new Set(a.split(" "));
+
+    const wordsB =
+        new Set(b.split(" "));
+
+    let common = 0;
+
+    wordsA.forEach(word => {
+        if (wordsB.has(word)) {
+            common++;
+        }
+    });
+
+    const total =
+        new Set([
+            ...wordsA,
+            ...wordsB
+        ]).size;
+
+    return total === 0
+        ? 0
+        : common / total;
+}
+document.addEventListener("DOMContentLoaded", function () {
+
+    const notePages =
+        document.getElementById("notePages");
+
+    const customPages =
+        document.getElementById("customPages");
+
+    if (notePages && customPages) {
+
+        notePages.addEventListener("change", function () {
+
+            customPages.style.display =
+                this.value === "custom"
+                    ? "inline-block"
+                    : "none";
+        });
+    }
+
+});
