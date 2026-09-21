@@ -510,21 +510,20 @@ function similarity(a, b) {
 }
 document.addEventListener("DOMContentLoaded", function () {
 
-    const notePages =
-        document.getElementById("notePages");
+    const notePages = document.getElementById("notePages");
+    const customPages = document.getElementById("customPages");
 
-    const customPages =
-        document.getElementById("customPages");
+    function checkCustomPages() {
+        if (notePages.value === "custom") {
+            customPages.style.display = "inline-block";
+        } else {
+            customPages.style.display = "none";
+        }
+    }
 
     if (notePages && customPages) {
-
-        notePages.addEventListener("change", function () {
-
-            customPages.style.display =
-                this.value === "custom"
-                    ? "inline-block"
-                    : "none";
-        });
+        notePages.addEventListener("change", checkCustomPages);
+        checkCustomPages();
     }
 
 });
