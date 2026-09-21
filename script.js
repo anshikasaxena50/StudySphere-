@@ -125,12 +125,11 @@ async function makeNotes() {
             "Unable to create notes. Please try again.";
     }
 }
-
 async function handwrittenNotes() {
-    const question = document.getElementById("question").value;
+    const question = document.getElementById("question").value.trim();
     const answer = document.getElementById("answer");
 
-    if (question.trim() === "") {
+    if (!question) {
         answer.innerText =
             "Please enter a topic for handwritten notes.";
         return;
@@ -140,42 +139,7 @@ async function handwrittenNotes() {
         "✍️ Creating your handwritten notes...";
 
     try {
-        const response = await fetch(
-            "https://ai-study-assistant.anshikasaxena50.workers.dev",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    question: `Create study notes for:
-
-${question}
-
-Make the content suitable for handwritten-style study pages.
-
-Include:
-1. Simple definition
-2. Important concepts
-3. Key points
-4. Examples where useful
-5. Important formulas or syntax if applicable
-6. Short revision summary
-
-Use clear headings and concise points.
-Do not repeat the same information unnecessarily.
-Make the content suitable for a college student.`
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.error) {
-            answer.innerText = "Error: " + data.error;
-            return;
-        }
-
+        // Get user's settings
         const pageStyleElement =
             document.getElementById("pageStyle");
 
@@ -201,88 +165,244 @@ Make the content suitable for a college student.`
                 : "auto";
 
 
-        // Determine number of pages
-        let pageCount = 1;
+        // =========================================
+        // ASK AI FOR DETAILED STUDY CONTENT
+        // =========================================
 
-        if (pagesChoice === "custom") {
+        const response = await fetch(
+            "https://ai-study-assistant.anshikasaxena50.workers.dev",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    question:
+                        `Create handwritten-style study notes for:
+
+${question}
+
+Make the notes detailed enough to cover the topic properly.
+
+Organize the content in this order when relevant:
+
+1. Introduction
+2. Simple definition
+3. Important concepts
+4. Key points
+5. Syntax / formulas / algorithms
+6. Examples
+7. Advantages and disadvantages
+8. Applications
+9. Important exam points
+10. Short revision summary
+
+Use clear headings and concise points.
+
+IMPORTANT:
+- Do not repeat the same information.
+- Cover the topic from basic to advanced level.
+- Write enough useful content for multiple handwritten study pages when the topic is large.
+- Keep the content suitable for a college student.
+- Make it easy to revise for exams.`
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        // =========================================
+        // ERROR HANDLING
+        // =========================================
+
+        if (!response.ok || data.error) {
+            answer.innerText =
+                "Error: " +
+                (data.error || "Unable to create handwritten notes.");
+            return;
+        }
+
+        if (!data.answer) {
+            answer.innerText =
+                "The AI did not return any notes.";
+            return;
+        }
+
+
+        // =========================================
+        // DETERMINE PAGE COUNT
+        // =========================================
+
+        let pageCount;
+
+
+        // AUTO PAGE COUNT
+        if (pagesChoice === "auto") {
+
+            const textLength =
+                data.answer.length;
+
+            if (textLength <= 1800) {
+                pageCount = 1;
+            }
+            else if (textLength <= 3500) {
+                pageCount = 2;
+            }
+            else if (textLength <= 5500) {
+                pageCount = 3;
+            }
+            else if (textLength <= 7500) {
+                pageCount = 4;
+            }
+            else if (textLength <= 9500) {
+                pageCount = 5;
+            }
+            else if (textLength <= 12000) {
+                pageCount = 6;
+            }
+            else if (textLength <= 15000) {
+                pageCount = 8;
+            }
+            else {
+                pageCount = 10;
+            }
+
+        }
+
+        // CUSTOM PAGE COUNT
+        else if (pagesChoice === "custom") {
 
             const customPages =
                 document.getElementById("customPages");
 
             pageCount =
                 customPages
-                    ? parseInt(customPages.value) || 1
+                    ? parseInt(customPages.value)
                     : 1;
 
-        } else if (
-            pagesChoice &&
-            pagesChoice !== "auto"
-        ) {
+            if (!pageCount || pageCount < 1) {
+                pageCount = 1;
+            }
 
-            pageCount = parseInt(pagesChoice) || 1;
+            if (pageCount > 20) {
+                pageCount = 20;
+            }
+
+        }
+
+        // FIXED PAGE COUNT
+        else {
+
+            pageCount =
+                parseInt(pagesChoice) || 1;
         }
 
 
-        // Format AI content
-        const content =
-            formatAnswer(data.answer);
+        // =========================================
+        // SPLIT CONTENT INTO DIFFERENT PAGES
+        // =========================================
+
+        const rawText =
+            data.answer.trim();
+
+        // Split mainly by paragraphs
+        let sections =
+            rawText
+                .split(/\n\s*\n/)
+                .map(section => section.trim())
+                .filter(section => section.length > 0);
 
 
-        // Create pages
-        let pagesHTML = "";
+        // If AI didn't create enough paragraphs,
+        // split large sections by lines.
+        if (sections.length < pageCount) {
+
+            sections =
+                rawText
+                    .split(/\n/)
+                    .map(section => section.trim())
+                    .filter(section => section.length > 0);
+        }
+
+
+        // =========================================
+        // CREATE PAGE CONTENT
+        // =========================================
+
+        const pages = [];
+
+        const itemsPerPage =
+            Math.ceil(sections.length / pageCount);
+
 
         for (let i = 0; i < pageCount; i++) {
 
+            const start =
+                i * itemsPerPage;
+
+            const end =
+                start + itemsPerPage;
+
+            let pageContent =
+                sections.slice(start, end);
+
+
+            // If there is no content for this page,
+            // don't create an empty page.
+            if (pageContent.length === 0) {
+                continue;
+            }
+
+
+            pages.push(pageContent.join("\n\n"));
+        }
+
+
+        // =========================================
+        // RENDER PAGES
+        // =========================================
+
+        let pagesHTML = "";
+
+
+        pages.forEach((pageContent, index) => {
+
+            const formattedContent =
+                formatAnswer(pageContent);
+
+
             pagesHTML += `
                 <div class="handwritten-note ${pageStyle} font-${noteFont}">
-                    ${content}
+
+                    <div class="note-page-number">
+                        Page ${index + 1}
+                    </div>
+
+                    <div class="note-content">
+                        ${formattedContent}
+                    </div>
+
                 </div>
             `;
 
-        }
+        });
+
 
         answer.innerHTML = pagesHTML;
 
+
     } catch (error) {
+
+        console.error(
+            "Handwritten Notes error:",
+            error
+        );
 
         answer.innerText =
             "Unable to create handwritten notes. Please try again.";
-
-        console.error(error);
     }
 }
-
-
-// =========================
-// CUSTOM PAGE CONTROL
-// =========================
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const notePages =
-        document.getElementById("notePages");
-
-    const customPages =
-        document.getElementById("customPages");
-
-    if (notePages && customPages) {
-
-        notePages.addEventListener("change", function () {
-
-            if (this.value === "custom") {
-
-                customPages.style.display =
-                    "inline-block";
-
-            } else {
-
-                customPages.style.display =
-                    "none";
-
-            }
-
-        });
-
-    }
-
-});
