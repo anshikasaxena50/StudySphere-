@@ -87,20 +87,30 @@ async function makeNotes() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    question: `Create clear, student-friendly study notes on:
+                    question: `Create well-organized study notes on the following topic:
 
 ${question}
 
-Include:
-- Short definition
-- Important points
-- Key concepts
-- Examples where useful
-- Important terms
-- Short summary
+Requirements:
 
-Organize the notes clearly using headings and bullet points.
-Keep them useful for a college student and easy to revise.`
+1. Start with a clear and simple definition.
+2. Explain the topic from basic to advanced level.
+3. Divide the notes into meaningful headings and subheadings.
+4. Include important concepts and key points.
+5. Include syntax, formulas, algorithms, or diagrams descriptions when relevant.
+6. Give simple examples wherever useful.
+7. Mention advantages and disadvantages when relevant.
+8. Include important exam points.
+9. End with a short revision summary.
+
+Make the notes:
+- Clear
+- Student-friendly
+- Well structured
+- Easy to revise
+- Suitable for a college student
+
+Do not unnecessarily repeat information.`
                 })
             }
         );
@@ -109,9 +119,10 @@ Keep them useful for a college student and easy to revise.`
 
         if (data.error) {
             answer.innerText = "Error: " + data.error;
-        } else {
-            answer.innerHTML = formatAnswer(data.answer);
+            return;
         }
+
+        answer.innerHTML = formatAnswer(data.answer);
 
     } catch (error) {
         answer.innerText =
@@ -120,11 +131,6 @@ Keep them useful for a college student and easy to revise.`
         console.error(error);
     }
 }
-
-
-// =========================
-// HANDWRITTEN NOTES
-// =========================
 
 async function handwrittenNotes() {
     const question = document.getElementById("question").value;
