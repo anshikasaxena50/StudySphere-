@@ -262,12 +262,13 @@ Continue until PAGE ${pageCount}.
         for (let i = 0; i < pageCount; i++) {
 
             const previousPages =
-                generatedPages
-                    .map((page, index) =>
-                        `PAGE ${index + 1}:\n${page}`
-                    )
-                    .join("\n\n");
-
+    generatedPages
+        .slice(-2)
+        .map((page, index) =>
+            `RECENT PAGE:\n${page.slice(0, 2500)}`
+        )
+        .join("\n\n");
+            
             const pageResponse = await fetch(
                 "https://ai-study-assistant.anshikasaxena50.workers.dev",
                 {
@@ -286,7 +287,7 @@ THIS PAGE SHOULD COVER:
 ${pagePlans[i]}
 
 ${previousPages
-    ? `CONTENT ALREADY COVERED ON PREVIOUS PAGES:
+    ? `CONTENT FROM RECENT PAGES (use only to avoid repetition):
 ${previousPages}`
     : ""}
 
