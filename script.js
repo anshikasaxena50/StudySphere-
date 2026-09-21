@@ -68,10 +68,10 @@ async function askAI() {
 // =========================
 
 async function makeNotes() {
-    const question = document.getElementById("question").value;
+    const question = document.getElementById("question").value.trim();
     const answer = document.getElementById("answer");
 
-    if (question.trim() === "") {
+    if (!question) {
         answer.innerText = "Please enter a topic for your notes.";
         return;
     }
@@ -87,48 +87,42 @@ async function makeNotes() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    question: `Create well-organized study notes on the following topic:
-
-${question}
-
-Requirements:
-
-1. Start with a clear and simple definition.
-2. Explain the topic from basic to advanced level.
-3. Divide the notes into meaningful headings and subheadings.
-4. Include important concepts and key points.
-5. Include syntax, formulas, algorithms, or diagrams descriptions when relevant.
-6. Give simple examples wherever useful.
-7. Mention advantages and disadvantages when relevant.
-8. Include important exam points.
-9. End with a short revision summary.
-
-Make the notes:
-- Clear
-- Student-friendly
-- Well structured
-- Easy to revise
-- Suitable for a college student
-
-Do not unnecessarily repeat information.`
+                    question:
+                        "Create clear, well-organized study notes on: " +
+                        question +
+                        "\n\n" +
+                        "Include definition, important points, key concepts, examples, " +
+                        "and a short revision summary. Use headings and bullet points. " +
+                        "Make the notes suitable for a college student and easy to revise."
                 })
             }
         );
 
         const data = await response.json();
 
-        if (data.error) {
-            answer.innerText = "Error: " + data.error;
+        console.log("Notes response:", data);
+
+        if (!response.ok) {
+            answer.innerText =
+                "Error: " +
+                (data.error || "Unable to create notes.");
+            return;
+        }
+
+        if (!data.answer) {
+            answer.innerText =
+                "The AI did not return any notes.";
             return;
         }
 
         answer.innerHTML = formatAnswer(data.answer);
 
     } catch (error) {
+
+        console.error("Notes error:", error);
+
         answer.innerText =
             "Unable to create notes. Please try again.";
-
-        console.error(error);
     }
 }
 
