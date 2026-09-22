@@ -64,6 +64,13 @@
             class="hidden"
         >
 
+    <label>Include Diagram:</label>
+
+<select id="notesDiagram">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+</select>
+        
     </div>
 
 
@@ -140,8 +147,14 @@
             <option value="shadows">
                 Shadows Into Light
             </option>
-
+    
         </select>
+        <label>Include Diagram:</label>
+
+<select id="handwrittenDiagram">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+</select>
 
     </div>
 
@@ -149,7 +162,11 @@
     <div id="answer"></div>
 
 
-    <script src="script.js?v=7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script src="script.js?v=8"></script>
 
 </body>
 
