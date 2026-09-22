@@ -212,3 +212,34 @@ button {
     margin-bottom: 15px;
     color: #333;
 }
+.hidden {
+    display: none !important;
+}
+
+.controls {
+    width: 90%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 15px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.controls label {
+    font-weight: bold;
+}
+
+.controls select,
+.controls input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+    font-size: 14px;
+}
