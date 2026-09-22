@@ -1,77 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>StudySphere</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <h1>StudySphere</h1>
+    <h1>🤖 StudySphere</h1>
     <p>Your personal study helper</p>
 
-    <input 
-        type="text" 
-        id="question" 
+    <input
+        type="text"
+        id="question"
         placeholder="Ask a study question..."
     >
 
-    <button onclick="askAI()">Ask AI</button>
-    <button onclick="makeNotes()">📝 Make Notes</button>
-    <button onclick="handwrittenNotes()">✍️ Handwritten Notes</button>
-    <div class="note-options">
+    <div class="main-buttons">
 
-    <label>
-        📄 Page:
-        <select id="pageStyle">
-            <option value="lined">Lined</option>
-            <option value="plain">Plain White</option>
-            <option value="cream">Cream</option>
-            <option value="blue">Light Blue</option>
-            <option value="green">Light Green</option>
-            <option value="grid">Grid</option>
-            <option value="dotted">Dotted</option>
-        </select>
-    </label>
+        <button onclick="askAI()">
+            Ask AI
+        </button>
 
-    <label>
-        ✍️ Font:
-        <select id="noteFont">
-            <option value="comic">Comic Sans MS</option>
-            <option value="segoe">Segoe Print</option>
-            <option value="caveat">Cursive</option>
-            <option value="serif">Handwritten Serif</option>
-        </select>
-    </label>
+        <button onclick="makeNotes()">
+            📝 Make Notes
+        </button>
 
-    <label>
-        📑 Pages:
-        <select id="notePages">
+        <button onclick="handwrittenNotes()">
+            ✍️ Handwritten Notes
+        </button>
+
+    </div>
+
+
+    <!-- NOTES CONTROLS -->
+
+    <div id="notesControls" class="controls hidden">
+
+        <label>
+            Page Number:
+        </label>
+
+        <select id="notesPageNumber">
             <option value="1">1 Page</option>
             <option value="2">2 Pages</option>
             <option value="3">3 Pages</option>
+            <option value="4">4 Pages</option>
             <option value="5">5 Pages</option>
             <option value="custom">Custom</option>
         </select>
-    </label>
 
-    <input
-        type="number"
-        id="customPages"
-        min="1"
-        max="20"
-        placeholder="Pages"
-        style="display:none;"
-    >
+        <input
+            type="number"
+            id="customNotesPages"
+            min="1"
+            max="20"
+            placeholder="Enter pages"
+            class="hidden"
+        >
 
-</div>
+    </div>
 
-<button onclick="generateDiagram()">📊 Generate Diagram/Figure</button>
-    
+
+    <!-- HANDWRITTEN CONTROLS -->
+
+    <div id="handwrittenControls" class="controls hidden">
+
+        <label>
+            Page Number:
+        </label>
+
+        <select id="handwrittenPageNumber">
+            <option value="1">1 Page</option>
+            <option value="2">2 Pages</option>
+            <option value="3">3 Pages</option>
+            <option value="4">4 Pages</option>
+            <option value="5">5 Pages</option>
+            <option value="custom">Custom</option>
+        </select>
+
+        <input
+            type="number"
+            id="customHandwrittenPages"
+            min="1"
+            max="20"
+            placeholder="Enter pages"
+            class="hidden"
+        >
+
+
+        <label>
+            Page Background:
+        </label>
+
+        <select id="pageBackground">
+            <option value="lined">Lined Paper</option>
+            <option value="plain">Plain Paper</option>
+            <option value="grid">Grid Paper</option>
+            <option value="yellow">Yellow Notebook</option>
+        </select>
+
+
+        <label>
+            Font:
+        </label>
+
+        <select id="handwrittenFont">
+            <option value="hand1">Handwriting 1</option>
+            <option value="hand2">Handwriting 2</option>
+            <option value="hand3">Handwriting 3</option>
+        </select>
+
+    </div>
+
+
     <div id="answer"></div>
 
-    <script src="script.js?v=4"></script>
+
+    <script src="script.js?v=5"></script>
+
 </body>
+
 </html>
