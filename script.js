@@ -527,4 +527,54 @@ document.addEventListener("DOMContentLoaded", function () {
         checkCustomPages();
     }
 
+});function hideAllControls() {
+    document.getElementById("notesControls").classList.add("hidden");
+    document.getElementById("handwrittenControls").classList.add("hidden");
+
+    document.getElementById("customNotesPages").classList.add("hidden");
+    document.getElementById("customHandwrittenPages").classList.add("hidden");
+}
+
+
+function showNotesControls() {
+    hideAllControls();
+
+    document
+        .getElementById("notesControls")
+        .classList.remove("hidden");
+}
+
+
+function showHandwrittenControls() {
+    hideAllControls();
+
+    document
+        .getElementById("handwrittenControls")
+        .classList.remove("hidden");
+}
+
+
+document.getElementById("notesPageNumber").addEventListener("change", function () {
+
+    const custom = document.getElementById("customNotesPages");
+
+    if (this.value === "custom") {
+        custom.classList.remove("hidden");
+    } else {
+        custom.classList.add("hidden");
+    }
+
+});
+
+
+document.getElementById("handwrittenPageNumber").addEventListener("change", function () {
+
+    const custom = document.getElementById("customHandwrittenPages");
+
+    if (this.value === "custom") {
+        custom.classList.remove("hidden");
+    } else {
+        custom.classList.add("hidden");
+    }
+
 });
