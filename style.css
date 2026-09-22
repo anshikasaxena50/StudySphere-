@@ -784,3 +784,126 @@ body > p {
         font-size: 18px;
     }
 }
+/* ==========================================
+   DIAGRAM
+========================================== */
+
+.note-diagram {
+    width: 100%;
+
+    margin: 25px auto;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.75);
+
+    border: 1px solid #e1dced;
+
+    border-radius: 14px;
+
+    overflow-x: auto;
+}
+
+
+.note-diagram svg {
+    max-width: 100%;
+    height: auto;
+}
+
+
+/* ==========================================
+   PDF BUTTON AREA
+========================================== */
+
+.pdf-button-container {
+    width: 90%;
+
+    max-width: 720px;
+
+    margin: 20px auto 35px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+}
+
+
+.pdf-button {
+    padding: 11px 20px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #e9ddff;
+
+    color: #59447d;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 15px rgba(90, 70, 125, 0.12);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.pdf-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(90, 70, 125, 0.18);
+}
+
+
+/* ==========================================
+   PDF PRINT FRIENDLY
+========================================== */
+
+.pdf-page {
+    page-break-inside: avoid;
+}
+
+
+/* ==========================================
+   HANDWRITTEN DIAGRAM
+========================================== */
+
+.handwritten-note .note-diagram {
+
+    background: rgba(255, 255, 255, 0.55);
+
+    border:
+        1px dashed #9bb7d3;
+
+    border-radius: 8px;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    .pdf-button-container {
+        width: 95%;
+    }
+
+    .pdf-button {
+        width: 100%;
+    }
+
+}
