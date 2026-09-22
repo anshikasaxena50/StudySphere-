@@ -1,9 +1,49 @@
+/* ==========================================
+   STUDYSPHERE - AESTHETIC STYLE
+   FUNCTIONALITY PRESERVED
+========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Shadows+Into+Light&display=swap');
+
+
+/* ==========================================
+   BODY
+========================================== */
+
 body {
     margin: 0;
-    padding: 30px 0;
-    font-family: Arial, sans-serif;
-    background: #f4f7fb;
+    padding: 45px 20px 60px;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #eee7ff 0%,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at top right,
+            #ffe8f2 0%,
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #f8f6ff,
+            #fff8fb,
+            #f5f9ff
+        );
+
+    color: #332f45;
+
     text-align: center;
+
+    min-height: 100vh;
+
+    box-sizing: border-box;
 }
 
 
@@ -12,12 +52,29 @@ body {
 ========================================== */
 
 h1 {
-    margin-bottom: 5px;
+    margin: 0 0 8px;
+
+    font-size: 42px;
+
+    font-weight: 700;
+
+    letter-spacing: -1px;
+
+    color: #5d4b8c;
+
+    text-shadow:
+        0 3px 12px rgba(93, 75, 140, 0.15);
 }
 
+
 body > p {
-    margin-top: 0;
-    color: #555;
+    margin: 0 0 30px;
+
+    color: #766f86;
+
+    font-size: 16px;
+
+    letter-spacing: 0.3px;
 }
 
 
@@ -26,16 +83,54 @@ body > p {
 ========================================== */
 
 #question {
-    width: 80%;
-    max-width: 700px;
-    padding: 12px 15px;
-    margin: 20px auto;
+    display: block;
 
-    border: 1px solid #aaa;
-    border-radius: 8px;
+    width: 85%;
+    max-width: 720px;
+
+    padding: 16px 20px;
+
+    margin: 0 auto 22px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e1dced;
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    color: #373143;
 
     font-size: 16px;
-    box-sizing: border-box;
+
+    outline: none;
+
+    box-shadow:
+        0 8px 25px rgba(91, 75, 120, 0.08);
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+#question::placeholder {
+    color: #a49caf;
+}
+
+
+#question:focus {
+    border-color: #b7a5e5;
+
+    box-shadow:
+        0 0 0 4px rgba(183, 165, 229, 0.18),
+        0 10px 30px rgba(91, 75, 120, 0.1);
+
+    transform: translateY(-1px);
 }
 
 
@@ -45,26 +140,74 @@ body > p {
 
 .main-buttons {
     display: flex;
+
     justify-content: center;
+
+    align-items: center;
+
     flex-wrap: wrap;
-    gap: 12px;
-    margin: 15px auto;
+
+    gap: 13px;
+
+    margin: 0 auto 25px;
 }
 
-.main-buttons button {
-    padding: 10px 18px;
 
-    border: none;
-    border-radius: 8px;
+.main-buttons button {
+    padding: 12px 22px;
+
+    border: 1px solid rgba(255, 255, 255, 0.7);
+
+    border-radius: 14px;
 
     cursor: pointer;
 
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
     font-size: 15px;
+
+    font-weight: 600;
+
+    color: #51436f;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eee7ff,
+            #f8eafa
+        );
+
+    box-shadow:
+        0 7px 18px rgba(93, 75, 140, 0.12);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+
+.main-buttons button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 11px 24px rgba(93, 75, 140, 0.18);
+
+    filter: brightness(1.02);
+}
+
+
+.main-buttons button:active {
+    transform: translateY(0);
 }
 
 
 /* ==========================================
    HIDDEN
+   IMPORTANT - KEEP FOR JAVASCRIPT
 ========================================== */
 
 .hidden {
@@ -78,39 +221,107 @@ body > p {
 
 .controls {
     width: 90%;
-    max-width: 700px;
+    max-width: 720px;
 
     margin: 20px auto;
-    padding: 15px;
+
+    padding: 18px 20px;
 
     display: flex;
+
     flex-wrap: wrap;
 
     gap: 12px;
 
     align-items: center;
+
     justify-content: center;
 
-    background: #f5f5f5;
-
-    border-radius: 10px;
-
     box-sizing: border-box;
+
+    background:
+        rgba(255, 255, 255, 0.72);
+
+    border:
+        1px solid rgba(225, 220, 239, 0.9);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(91, 75, 120, 0.08);
+
+    backdrop-filter: blur(12px);
+
+    animation:
+        controlsAppear 0.3s ease;
 }
+
+
+@keyframes controlsAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 .controls label {
-    font-weight: bold;
+    font-weight: 600;
+
+    color: #635775;
+
+    font-size: 14px;
 }
+
 
 .controls select,
 .controls input {
-    padding: 8px 12px;
+    padding: 9px 13px;
 
-    border-radius: 6px;
+    border:
+        1px solid #ddd6eb;
 
-    border: 1px solid #aaa;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #4b425b;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
 
     font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.controls select:hover,
+.controls input:hover {
+    border-color: #b9a9d9;
+}
+
+
+.controls select:focus,
+.controls input:focus {
+    border-color: #a996d2;
+
+    box-shadow:
+        0 0 0 3px rgba(169, 150, 210, 0.15);
 }
 
 
@@ -120,7 +331,10 @@ body > p {
 
 #answer {
     width: 100%;
-    margin-top: 25px;
+
+    margin-top: 28px;
+
+    box-sizing: border-box;
 }
 
 
@@ -130,40 +344,108 @@ body > p {
 
 .normal-note-page {
     width: 90%;
-    max-width: 700px;
+    max-width: 720px;
 
-    margin: 25px auto;
-    padding: 30px 35px;
+    margin: 28px auto;
+
+    padding: 34px 38px;
 
     box-sizing: border-box;
 
     text-align: left;
 
-    background: white;
+    background:
+        rgba(255, 255, 255, 0.94);
 
-    border-radius: 10px;
+    border:
+        1px solid #ebe5f3;
 
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+    border-radius: 20px;
 
-    line-height: 1.6;
+    line-height: 1.7;
+
+    color: #40394b;
+
+    box-shadow:
+        0 12px 35px rgba(72, 59, 95, 0.1);
+
+    animation:
+        noteAppear 0.4s ease;
 }
+
+
+@keyframes noteAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.normal-note-page h1 {
+    font-size: 28px;
+
+    color: #604b91;
+
+    text-shadow: none;
+}
+
+
+.normal-note-page h2 {
+    color: #69558f;
+
+    margin-top: 20px;
+}
+
+
+.normal-note-page h3 {
+    color: #75619a;
+
+    margin-top: 18px;
+}
+
 
 .normal-note-page h1,
 .normal-note-page h2,
 .normal-note-page h3 {
-    margin-top: 15px;
+    margin-bottom: 10px;
 }
+
+
+.normal-note-page strong {
+    color: #5a467e;
+}
+
+
+.normal-note-page .list-item {
+    margin: 5px 0;
+
+    padding-left: 8px;
+}
+
+
+/* ==========================================
+   PAGE NUMBER
+========================================== */
 
 .note-page-number {
     text-align: right;
 
-    font-size: 14px;
+    font-size: 13px;
 
-    color: #777;
+    color: #9991a5;
 
     margin-bottom: 15px;
 
-    font-weight: bold;
+    font-weight: 600;
+
+    letter-spacing: 0.4px;
 }
 
 
@@ -173,23 +455,24 @@ body > p {
 
 .handwritten-note {
     width: 90%;
-    max-width: 700px;
+    max-width: 720px;
 
     min-height: 500px;
 
-    margin: 30px auto;
+    margin: 32px auto;
 
-    padding: 40px;
+    padding: 42px;
 
     box-sizing: border-box;
 
     text-align: left;
 
-    border-left: 6px solid #e57373;
+    border-left: 7px solid #e28b9b;
 
-    border-radius: 4px;
+    border-radius: 5px 12px 12px 5px;
 
-    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.18);
+    box-shadow:
+        5px 8px 22px rgba(74, 62, 78, 0.16);
 
     font-size: 20px;
 
@@ -200,6 +483,27 @@ body > p {
     transform: rotate(-0.3deg);
 
     position: relative;
+
+    animation:
+        handwrittenAppear 0.45s ease;
+}
+
+
+@keyframes handwrittenAppear {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(12px)
+            rotate(-0.3deg);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            rotate(-0.3deg);
+    }
 }
 
 
@@ -211,6 +515,7 @@ body > p {
 .handwritten-note h2,
 .handwritten-note h3 {
     margin-top: 15px;
+
     margin-bottom: 10px;
 
     color: #123f78;
@@ -220,17 +525,21 @@ body > p {
     text-decoration-thickness: 1px;
 }
 
+
 .handwritten-note strong {
     color: #123f78;
 }
 
+
 .handwritten-note .list-item {
     margin-left: 10px;
+
+    padding-left: 5px;
 }
 
 
 /* ==========================================
-   PAGE NUMBER
+   HANDWRITTEN PAGE NUMBER
 ========================================== */
 
 .handwritten-note .note-page-number {
@@ -246,6 +555,7 @@ body > p {
 
 /* ==========================================
    BACKGROUND 1 — LINED PAPER
+   KEEP FUNCTIONALITY
 ========================================== */
 
 .background-lined {
@@ -317,78 +627,160 @@ body > p {
 
 /* ==========================================
    5 HANDWRITING FONTS
+   KEEP ALL 5 WORKING
 ========================================== */
+
 
 /* 1. Caveat */
 
 .font-caveat {
+
     font-family:
         "Caveat",
         "Segoe Print",
         cursive;
+
+    font-size: 22px;
 }
 
 
 /* 2. Kalam */
 
 .font-kalam {
+
     font-family:
         "Kalam",
         "Comic Sans MS",
         cursive;
+
+    font-size: 20px;
 }
 
 
 /* 3. Patrick Hand */
 
 .font-patrick {
+
     font-family:
         "Patrick Hand",
         "Segoe Print",
         cursive;
+
+    font-size: 21px;
 }
 
 
 /* 4. Indie Flower */
 
 .font-indie {
+
     font-family:
         "Indie Flower",
         "Comic Sans MS",
         cursive;
+
+    font-size: 20px;
 }
 
 
 /* 5. Shadows Into Light */
 
 .font-shadows {
+
     font-family:
         "Shadows Into Light",
         "Segoe Print",
         cursive;
+
+    font-size: 21px;
 }
 
 
 /* ==========================================
-   FONT SIZES
+   MOBILE RESPONSIVE DESIGN
 ========================================== */
 
-.font-caveat {
-    font-size: 22px;
-}
+@media (max-width: 600px) {
 
-.font-kalam {
-    font-size: 20px;
-}
+    body {
+        padding:
+            30px 12px 45px;
+    }
 
-.font-patrick {
-    font-size: 21px;
-}
 
-.font-indie {
-    font-size: 20px;
-}
+    h1 {
+        font-size: 32px;
+    }
 
-.font-shadows {
-    font-size: 21px;
+
+    body > p {
+        font-size: 14px;
+
+        margin-bottom: 25px;
+    }
+
+
+    #question {
+        width: 95%;
+
+        font-size: 15px;
+    }
+
+
+    .main-buttons {
+        gap: 9px;
+    }
+
+
+    .main-buttons button {
+        padding:
+            10px 15px;
+
+        font-size: 14px;
+    }
+
+
+    .controls {
+        width: 95%;
+
+        padding: 15px 12px;
+
+        gap: 9px;
+    }
+
+
+    .controls label {
+        font-size: 13px;
+    }
+
+
+    .controls select,
+    .controls input {
+        max-width: 100%;
+
+        padding:
+            8px 10px;
+    }
+
+
+    .normal-note-page {
+        width: 95%;
+
+        padding:
+            25px 22px;
+
+        border-radius: 16px;
+    }
+
+
+    .handwritten-note {
+        width: 95%;
+
+        min-height: 450px;
+
+        padding:
+            30px 25px;
+
+        font-size: 18px;
+    }
 }
