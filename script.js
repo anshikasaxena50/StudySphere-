@@ -730,190 +730,124 @@ function addPDFButton(
 // =========================================
 async function downloadPDF(filename) {
 
-    if (
-        typeof html2pdf ===
-        "undefined"
-    ) {
+    if (typeof html2pdf === "undefined") {
 
-        alert(
-            "PDF generator is not loaded. Please refresh the page."
-        );
+        alert("PDF generator is not loaded. Please refresh the page.");
 
         return;
     }
 
-
-    const answer =
-        document.getElementById(
-            "answer"
-        );
-
+    const answer = document.getElementById("answer");
 
     if (!answer) {
         return;
     }
 
-
-    const button =
-        document.querySelector(
-            ".pdf-button"
-        );
-
+    const button = document.querySelector(".pdf-button");
 
     if (button) {
-
-        button.innerText =
-            "⏳ Creating PDF...";
-
-        button.disabled =
-            true;
+        button.innerText = "⏳ Creating PDF...";
+        button.disabled = true;
     }
 
-
     let pdfContainer = null;
-
 
     try {
 
         // ==================================
-        // CREATE TEMPORARY PDF CONTAINER
+        // CREATE PDF CONTAINER
         // ==================================
 
-        pdfContainer =
-            document.createElement(
-                "div"
-            );
+        pdfContainer = document.createElement("div");
 
+        pdfContainer.id = "studysphere-pdf-container";
 
-        pdfContainer.id =
-            "studysphere-pdf-container";
+        pdfContainer.style.position = "fixed";
+        pdfContainer.style.left = "10px";
+        pdfContainer.style.top = "10px";
+        pdfContainer.style.width = "794px";
+        pdfContainer.style.background = "#ffffff";
+        pdfContainer.style.padding = "20px";
+        pdfContainer.style.boxSizing = "border-box";
 
+        // IMPORTANT:
+        // Do NOT use z-index:-1
+        // Do NOT use display:none
+        // Do NOT use visibility:hidden
 
-        pdfContainer.style.position =
-            "absolute";
-
-        pdfContainer.style.left =
-            "0";
-
-        pdfContainer.style.top =
-            "0";
-
-        pdfContainer.style.width =
-            "794px";
-
-        pdfContainer.style.background =
-            "#ffffff";
-
-        pdfContainer.style.padding =
-            "20px";
-
-        pdfContainer.style.boxSizing =
-            "border-box";
-
-        pdfContainer.style.zIndex =
-            "-1";
-
+        pdfContainer.style.zIndex = "999999";
+        pdfContainer.style.opacity = "0.01";
+        pdfContainer.style.pointerEvents = "none";
 
         // ==================================
-        // COPY GENERATED PAGES
+        // GET NOTE PAGES
         // ==================================
 
-        const pages =
-            answer.querySelectorAll(
-                ".normal-note-page, .handwritten-note"
-            );
-
+        const pages = answer.querySelectorAll(
+            ".normal-note-page, .handwritten-note"
+        );
 
         if (!pages.length) {
 
-            throw new Error(
-                "No note pages found."
-            );
+            throw new Error("No note pages found.");
         }
 
-
-        pages.forEach(
-            function (page) {
-
-                const clone =
-                    page.cloneNode(
-                        true
-                    );
-
-
-                // Remove animation
-                clone.style.animation =
-                    "none";
-
-
-                // Remove rotation for PDF
-                clone.style.transform =
-                    "none";
-
-
-                // Remove shadow
-                clone.style.boxShadow =
-                    "none";
-
-
-                // Make page fit PDF
-                clone.style.width =
-                    "100%";
-
-                clone.style.maxWidth =
-                    "none";
-
-
-                clone.style.margin =
-                    "0 0 20px 0";
-
-
-                clone.style.boxSizing =
-                    "border-box";
-
-
-                clone.style.pageBreakInside =
-                    "avoid";
-
-
-                clone.style.breakInside =
-                    "avoid";
-
-
-                pdfContainer.appendChild(
-                    clone
-                );
-
-            }
-        );
-
-
         // ==================================
-        // ADD TO PAGE
+        // COPY EACH PAGE
         // ==================================
 
-        document.body.appendChild(
-            pdfContainer
-        );
+        pages.forEach(function(page) {
 
+            const clone = page.cloneNode(true);
 
-        // Give browser time to render
-        await new Promise(
-            function (resolve) {
+            // Remove animations
+            clone.style.animation = "none";
 
-                requestAnimationFrame(
-                    function () {
+            // Remove handwritten rotation
+            clone.style.transform = "none";
 
-                        requestAnimationFrame(
-                            resolve
-                        );
+            // Remove shadows
+            clone.style.boxShadow = "none";
 
-                    }
-                );
+            // PDF width
+            clone.style.width = "100%";
+            clone.style.maxWidth = "none";
 
-            }
-        );
+            // Spacing
+            clone.style.margin = "0 0 20px 0";
 
+            clone.style.boxSizing = "border-box";
+
+            // Prevent page splitting
+            clone.style.pageBreakInside = "avoid";
+            clone.style.breakInside = "avoid";
+
+            pdfContainer.appendChild(clone);
+        });
+
+        // ==================================
+        // ADD TO DOCUMENT
+        // ==================================
+
+        document.body.appendChild(pdfContainer);
+
+        // ==================================
+        // WAIT FOR RENDERING
+        // ==================================
+
+        await new Promise(function(resolve) {
+
+            requestAnimationFrame(function() {
+
+                requestAnimationFrame(function() {
+
+                    setTimeout(resolve, 300);
+
+                });
+
+            });
+
+        });
 
         // ==================================
         // CREATE PDF
@@ -923,15 +857,11 @@ async function downloadPDF(filename) {
 
             margin: 10,
 
-            filename:
-                filename,
+            filename: filename,
 
             image: {
-
                 type: "jpeg",
-
                 quality: 0.98
-
             },
 
             html2canvas: {
@@ -942,15 +872,17 @@ async function downloadPDF(filename) {
 
                 allowTaint: true,
 
-                backgroundColor:
-                    "#ffffff",
+                backgroundColor: "#ffffff",
 
                 logging: false,
 
                 scrollX: 0,
 
-                scrollY: 0
+                scrollY: 0,
 
+                windowWidth: 794,
+
+                windowHeight: pdfContainer.scrollHeight
             },
 
             jsPDF: {
@@ -959,11 +891,9 @@ async function downloadPDF(filename) {
 
                 format: "a4",
 
-                orientation:
-                    "portrait",
+                orientation: "portrait",
 
                 compress: true
-
             },
 
             pagebreak: {
@@ -972,51 +902,49 @@ async function downloadPDF(filename) {
                     "css",
                     "legacy"
                 ]
-
             }
-
         };
-
 
         await html2pdf()
             .set(options)
             .from(pdfContainer)
             .save();
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(
-            "PDF creation error:",
+            "StudySphere PDF Error:",
             error
         );
-
 
         alert(
             "Unable to create PDF. Please try again."
         );
+    }
 
+    finally {
 
-    } finally {
-
-        // Always remove temporary PDF copy
+        // ==================================
+        // REMOVE TEMPORARY CONTAINER
+        // ==================================
 
         if (pdfContainer) {
 
             pdfContainer.remove();
-
         }
 
+        // ==================================
+        // RESET BUTTON
+        // ==================================
 
         if (button) {
 
-            button.innerText =
-                "📄 Download PDF";
+            button.innerText = "📄 Download PDF";
 
-            button.disabled =
-                false;
+            button.disabled = false;
         }
-
     }
 }
 
