@@ -581,3 +581,59 @@ document.getElementById("handwrittenPageNumber").addEventListener("change", func
     }
 
 });
+function hideAllControls() {
+    document.getElementById("notesControls").classList.add("hidden");
+    document.getElementById("handwrittenControls").classList.add("hidden");
+}
+
+
+function showAskAI() {
+    hideAllControls();
+    askAI();
+}
+
+
+function showNotes() {
+    hideAllControls();
+
+    document.getElementById("notesControls")
+        .classList.remove("hidden");
+
+    makeNotes();
+}
+
+
+function showHandwritten() {
+    hideAllControls();
+
+    document.getElementById("handwrittenControls")
+        .classList.remove("hidden");
+
+    handwrittenNotes();
+}
+
+
+document.getElementById("notesPageNumber").addEventListener("change", function () {
+
+    const custom = document.getElementById("customNotesPages");
+
+    if (this.value === "custom") {
+        custom.classList.remove("hidden");
+    } else {
+        custom.classList.add("hidden");
+    }
+
+});
+
+
+document.getElementById("handwrittenPageNumber").addEventListener("change", function () {
+
+    const custom = document.getElementById("customHandwrittenPages");
+
+    if (this.value === "custom") {
+        custom.classList.remove("hidden");
+    } else {
+        custom.classList.add("hidden");
+    }
+
+});
