@@ -727,11 +727,8 @@ function addPDFButton(
 
 // ==========================================
 // DOWNLOAD PDF
-// ==========================================
-
-async function downloadPDF(
-    filename
-) {
+// =========================================
+async function downloadPDF(filename) {
 
     if (
         typeof html2pdf ===
@@ -773,20 +770,30 @@ async function downloadPDF(
     }
 
 
+    let pdfContainer = null;
+
+
     try {
 
-        // Create a clean temporary copy
-        const pdfContainer =
+        // ==================================
+        // CREATE TEMPORARY PDF CONTAINER
+        // ==================================
+
+        pdfContainer =
             document.createElement(
                 "div"
             );
 
 
+        pdfContainer.id =
+            "studysphere-pdf-container";
+
+
         pdfContainer.style.position =
-            "fixed";
+            "absolute";
 
         pdfContainer.style.left =
-            "-100000px";
+            "0";
 
         pdfContainer.style.top =
             "0";
@@ -798,54 +805,92 @@ async function downloadPDF(
             "#ffffff";
 
         pdfContainer.style.padding =
-            "30px";
+            "20px";
 
         pdfContainer.style.boxSizing =
             "border-box";
 
-        pdfContainer.style.color =
-            "#222";
+        pdfContainer.style.zIndex =
+            "-1";
 
 
-        // Copy only the generated pages
+        // ==================================
+        // COPY GENERATED PAGES
+        // ==================================
+
         const pages =
             answer.querySelectorAll(
                 ".normal-note-page, .handwritten-note"
             );
 
 
+        if (!pages.length) {
+
+            throw new Error(
+                "No note pages found."
+            );
+        }
+
+
         pages.forEach(
             function (page) {
 
                 const clone =
-                    page.cloneNode(true);
+                    page.cloneNode(
+                        true
+                    );
 
 
+                // Remove animation
+                clone.style.animation =
+                    "none";
+
+
+                // Remove rotation for PDF
+                clone.style.transform =
+                    "none";
+
+
+                // Remove shadow
+                clone.style.boxShadow =
+                    "none";
+
+
+                // Make page fit PDF
                 clone.style.width =
                     "100%";
 
                 clone.style.maxWidth =
                     "none";
 
+
                 clone.style.margin =
-                    "0 0 30px 0";
+                    "0 0 20px 0";
 
-                clone.style.transform =
-                    "none";
 
-                clone.style.animation =
-                    "none";
+                clone.style.boxSizing =
+                    "border-box";
 
-                clone.style.boxShadow =
-                    "none";
+
+                clone.style.pageBreakInside =
+                    "avoid";
+
+
+                clone.style.breakInside =
+                    "avoid";
 
 
                 pdfContainer.appendChild(
                     clone
                 );
+
             }
         );
 
+
+        // ==================================
+        // ADD TO PAGE
+        // ==================================
 
         document.body.appendChild(
             pdfContainer
@@ -856,14 +901,23 @@ async function downloadPDF(
         await new Promise(
             function (resolve) {
 
-                setTimeout(
-                    resolve,
-                    300
+                requestAnimationFrame(
+                    function () {
+
+                        requestAnimationFrame(
+                            resolve
+                        );
+
+                    }
                 );
 
             }
         );
 
+
+        // ==================================
+        // CREATE PDF
+        // ==================================
 
         const options = {
 
@@ -884,12 +938,18 @@ async function downloadPDF(
 
                 scale: 2,
 
+                useCORS: true,
+
+                allowTaint: true,
+
                 backgroundColor:
                     "#ffffff",
 
-                useCORS: true,
+                logging: false,
 
-                logging: false
+                scrollX: 0,
+
+                scrollY: 0
 
             },
 
@@ -900,7 +960,9 @@ async function downloadPDF(
                 format: "a4",
 
                 orientation:
-                    "portrait"
+                    "portrait",
+
+                compress: true
 
             },
 
@@ -922,10 +984,6 @@ async function downloadPDF(
             .save();
 
 
-        // Remove temporary copy
-        pdfContainer.remove();
-
-
     } catch (error) {
 
         console.error(
@@ -938,16 +996,15 @@ async function downloadPDF(
             "Unable to create PDF. Please try again."
         );
 
+
     } finally {
 
-        const temporary =
-            document.querySelector(
-                "body > div[style*='-100000px']"
-            );
+        // Always remove temporary PDF copy
 
+        if (pdfContainer) {
 
-        if (temporary) {
-            temporary.remove();
+            pdfContainer.remove();
+
         }
 
 
@@ -959,6 +1016,7 @@ async function downloadPDF(
             button.disabled =
                 false;
         }
+
     }
 }
 
