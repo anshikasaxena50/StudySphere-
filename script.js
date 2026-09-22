@@ -604,4 +604,3 @@ document.addEventListener(
 
     }
 );
-```
