@@ -1184,5 +1184,230 @@ Continue only up to PAGE ${pageCount}.
 
 Rules:
 1. Stay completely focused on the topic.
-2. Do not repeat the sam
-````
+2. Do not repeat the same information.
+3. Each page should contain useful new information.
+4. Use simple language suitable for a college student.
+5. Include definitions, important points, examples, formulas, algorithms, applications or exam points when relevant.
+6. Use headings and bullet points where useful.
+7. Keep the content suitable for handwritten study notes.
+8. Do not mention these instructions.
+${diagramInstruction}`
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            data.error
+        ) {
+
+            answer.innerText =
+                "Error: " +
+                (
+                    data.error ||
+                    "StudySphere AI is temporarily unavailable. Please try again shortly."
+                );
+
+            return;
+        }
+
+
+        if (!data.answer) {
+
+            answer.innerText =
+                "The AI did not return any handwritten notes.";
+
+            return;
+        }
+
+
+        const pages =
+            splitPages(
+                data.answer
+            );
+
+
+        let pagesHTML = "";
+
+
+        pages.forEach(
+            function (
+                content,
+                index
+            ) {
+
+                pagesHTML += `
+
+                    <div
+                        class="
+                            handwritten-note
+                            pdf-page
+                            background-${background}
+                            font-${font}
+                        "
+                    >
+
+                        <div
+                            class="note-page-number"
+                        >
+                            Page ${index + 1}
+                        </div>
+
+                        <div
+                            class="note-content"
+                        >
+
+                            ${formatAnswer(
+                                content
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+            }
+        );
+
+
+        answer.innerHTML =
+            pagesHTML;
+
+
+        // Render diagram if present
+        await renderDiagrams();
+
+
+        // ALWAYS show PDF button
+        addPDFButton(
+            "StudySphere-Handwritten-Notes.pdf"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Handwritten Notes error:",
+            error
+        );
+
+
+        answer.innerText =
+            "Unable to create handwritten notes. Please try again.";
+    }
+}
+
+
+// ==========================================
+// PAGE CONTROL EVENTS
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        hideAllControls();
+
+
+        // NOTES CUSTOM PAGE COUNT
+
+        const notesPageNumber =
+            document.getElementById(
+                "notesPageNumber"
+            );
+
+
+        const customNotesPages =
+            document.getElementById(
+                "customNotesPages"
+            );
+
+
+        if (
+            notesPageNumber &&
+            customNotesPages
+        ) {
+
+            notesPageNumber.addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        this.value === "custom"
+                    ) {
+
+                        customNotesPages
+                            .classList
+                            .remove(
+                                "hidden"
+                            );
+
+                    } else {
+
+                        customNotesPages
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+                    }
+
+                }
+            );
+        }
+
+
+        // HANDWRITTEN CUSTOM PAGE COUNT
+
+        const handwrittenPageNumber =
+            document.getElementById(
+                "handwrittenPageNumber"
+            );
+
+
+        const customHandwrittenPages =
+            document.getElementById(
+                "customHandwrittenPages"
+            );
+
+
+        if (
+            handwrittenPageNumber &&
+            customHandwrittenPages
+        ) {
+
+            handwrittenPageNumber.addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        this.value === "custom"
+                    ) {
+
+                        customHandwrittenPages
+                            .classList
+                            .remove(
+                                "hidden"
+                            );
+
+                    } else {
+
+                        customHandwrittenPages
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+                    }
+
+                }
+            );
+        }
+
+    }
+);
+
