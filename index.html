@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,15 +24,15 @@
 
     <div class="main-buttons">
 
-        <button onclick="askAI()">
+        <button onclick="showAskAI()">
             Ask AI
         </button>
 
-        <button onclick="makeNotes()">
+        <button onclick="showNotes()">
             📝 Make Notes
         </button>
 
-        <button onclick="handwrittenNotes()">
+        <button onclick="showHandwritten()">
             ✍️ Handwritten Notes
         </button>
 
@@ -42,17 +43,17 @@
 
     <div id="notesControls" class="controls hidden">
 
-        <label>
-            Page Number:
-        </label>
+        <label>Page Number:</label>
 
         <select id="notesPageNumber">
+
             <option value="1">1 Page</option>
             <option value="2">2 Pages</option>
             <option value="3">3 Pages</option>
             <option value="4">4 Pages</option>
             <option value="5">5 Pages</option>
             <option value="custom">Custom</option>
+
         </select>
 
         <input
@@ -71,17 +72,17 @@
 
     <div id="handwrittenControls" class="controls hidden">
 
-        <label>
-            Page Number:
-        </label>
+        <label>Page Number:</label>
 
         <select id="handwrittenPageNumber">
+
             <option value="1">1 Page</option>
             <option value="2">2 Pages</option>
             <option value="3">3 Pages</option>
             <option value="4">4 Pages</option>
             <option value="5">5 Pages</option>
             <option value="custom">Custom</option>
+
         </select>
 
         <input
@@ -94,26 +95,26 @@
         >
 
 
-        <label>
-            Page Background:
-        </label>
+        <label>Page Background:</label>
 
         <select id="pageBackground">
+
             <option value="lined">Lined Paper</option>
             <option value="plain">Plain Paper</option>
             <option value="grid">Grid Paper</option>
             <option value="yellow">Yellow Notebook</option>
+
         </select>
 
 
-        <label>
-            Font:
-        </label>
+        <label>Font:</label>
 
         <select id="handwrittenFont">
+
             <option value="hand1">Handwriting 1</option>
             <option value="hand2">Handwriting 2</option>
             <option value="hand3">Handwriting 3</option>
+
         </select>
 
     </div>
@@ -122,8 +123,9 @@
     <div id="answer"></div>
 
 
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
 
 </body>
 
 </html>
+```
