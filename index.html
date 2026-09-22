@@ -23,15 +23,15 @@
 
     <div class="main-buttons">
 
-        <button onclick="showAskAI()">
+        <button onclick="askAI()">
             Ask AI
         </button>
 
-        <button onclick="showNotes()">
+        <button onclick="makeNotes()">
             📝 Make Notes
         </button>
 
-        <button onclick="showHandwritten()">
+        <button onclick="handwrittenNotes()">
             ✍️ Handwritten Notes
         </button>
 
@@ -98,10 +98,21 @@
 
         <select id="pageBackground">
 
-            <option value="lined">Lined Paper</option>
-            <option value="plain">Plain Paper</option>
-            <option value="grid">Grid Paper</option>
-            <option value="yellow">Yellow Notebook</option>
+            <option value="lined">
+                Lined Paper
+            </option>
+
+            <option value="plain">
+                Plain Paper
+            </option>
+
+            <option value="grid">
+                Grid Paper
+            </option>
+
+            <option value="yellow">
+                Yellow Notebook
+            </option>
 
         </select>
 
@@ -110,9 +121,25 @@
 
         <select id="handwrittenFont">
 
-            <option value="hand1">Handwriting 1</option>
-            <option value="hand2">Handwriting 2</option>
-            <option value="hand3">Handwriting 3</option>
+            <option value="caveat">
+                Caveat
+            </option>
+
+            <option value="kalam">
+                Kalam
+            </option>
+
+            <option value="patrick">
+                Patrick Hand
+            </option>
+
+            <option value="indie">
+                Indie Flower
+            </option>
+
+            <option value="shadows">
+                Shadows Into Light
+            </option>
 
         </select>
 
@@ -122,7 +149,7 @@
     <div id="answer"></div>
 
 
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=7"></script>
 
 </body>
 
