@@ -1,25 +1,33 @@
+````javascript
+// ==========================================
+// STUDYSPHERE - FINAL VERSION
+// ==========================================
+
+
+// ==========================================
+// FORMAT ANSWER
+// ==========================================
+
 function formatAnswer(text) {
 
     if (!text) {
         return "";
     }
 
-    // Save Mermaid diagrams before formatting text
+    // Temporarily protect Mermaid blocks
     const diagrams = [];
 
     text = text.replace(
         /```mermaid\s*([\s\S]*?)```/gi,
         function (match, diagram) {
 
-            const id =
-                "diagram-" +
-                diagrams.length;
+            const id = diagrams.length;
 
             diagrams.push(
                 diagram.trim()
             );
 
-            return `___MERMAID_${id}___`;
+            return `___DIAGRAM_${id}___`;
         }
     );
 
@@ -98,25 +106,21 @@ function formatAnswer(text) {
     );
 
 
-    // Put Mermaid diagrams back
+    // Restore Mermaid blocks
     diagrams.forEach(
         function (diagram, index) {
-
-            const id =
-                "diagram-" +
-                index;
 
             const diagramHTML = `
                 <div class="note-diagram">
                     <div
                         class="mermaid"
-                        data-diagram-id="${id}"
+                        data-diagram="${index}"
                     >${diagram}</div>
                 </div>
             `;
 
             text = text.replace(
-                `___MERMAID_${id}___`,
+                `___DIAGRAM_${index}___`,
                 diagramHTML
             );
         }
@@ -128,7 +132,7 @@ function formatAnswer(text) {
 
 
 // ==========================================
-// INITIALIZE MERMAID
+// MERMAID INITIALIZATION
 // ==========================================
 
 if (
@@ -144,12 +148,11 @@ if (
         theme: "default"
 
     });
-
 }
 
 
 // ==========================================
-// RENDER MERMAID DIAGRAMS
+// RENDER MERMAID
 // ==========================================
 
 async function renderDiagrams() {
@@ -158,8 +161,8 @@ async function renderDiagrams() {
         typeof mermaid === "undefined"
     ) {
 
-        console.error(
-            "Mermaid library not loaded."
+        console.warn(
+            "Mermaid library is not loaded."
         );
 
         return;
@@ -187,21 +190,19 @@ async function renderDiagrams() {
             diagrams[i];
 
 
-        // Do not render an already-rendered diagram
         if (
-            element.getAttribute(
-                "data-rendered"
-            ) === "true"
+            element.dataset.rendered ===
+            "true"
         ) {
             continue;
         }
 
 
-        const diagramCode =
+        const code =
             element.textContent.trim();
 
 
-        if (!diagramCode) {
+        if (!code) {
             continue;
         }
 
@@ -209,7 +210,7 @@ async function renderDiagrams() {
         try {
 
             const id =
-                "mermaid-svg-" +
+                "diagram-" +
                 Date.now() +
                 "-" +
                 i;
@@ -218,7 +219,7 @@ async function renderDiagrams() {
             const result =
                 await mermaid.render(
                     id,
-                    diagramCode
+                    code
                 );
 
 
@@ -226,28 +227,21 @@ async function renderDiagrams() {
                 result.svg;
 
 
-            element.setAttribute(
-                "data-rendered",
-                "true"
-            );
+            element.dataset.rendered =
+                "true";
 
 
         } catch (error) {
 
             console.error(
-                "Mermaid rendering error:",
+                "Mermaid error:",
                 error
             );
 
 
             element.innerHTML = `
-                <div style="
-                    padding:15px;
-                    color:#9b4b4b;
-                    background:#fff1f1;
-                    border-radius:10px;
-                ">
-                    Diagram could not be rendered.
+                <div class="diagram-error">
+                    Diagram could not be generated.
                 </div>
             `;
         }
@@ -256,77 +250,247 @@ async function renderDiagrams() {
 
 
 // ==========================================
-// REMOVE OLD PDF BUTTON
+// CREATE A DIAGRAM FROM TOPIC
 // ==========================================
 
-function removePDFButton() {
+function createTopicDiagram(
+    topic,
+    target
+) {
 
-    const oldButton =
-        document.querySelector(
-            ".pdf-button-container"
-        );
-
-
-    if (oldButton) {
-        oldButton.remove();
+    if (!target) {
+        return;
     }
+
+
+    const lower =
+        topic.toLowerCase();
+
+
+    let diagram = "";
+
+
+    // ------------------------------
+    // SORTING
+    // ------------------------------
+
+    if (
+        lower.includes("sort") ||
+        lower.includes("sorting")
+    ) {
+
+        diagram = `
+            flowchart TD
+                A[Start] --> B[Input Array]
+                B --> C[Compare Elements]
+                C --> D[Find Correct Position]
+                D --> E[Swap or Insert]
+                E --> F{More Elements?}
+                F -->|Yes| C
+                F -->|No| G[Sorted Array]
+                G --> H[End]
+        `;
+
+    }
+
+
+    // ------------------------------
+    // SEARCHING
+    // ------------------------------
+
+    else if (
+        lower.includes("search")
+    ) {
+
+        diagram = `
+            flowchart TD
+                A[Start] --> B[Input Array]
+                B --> C[Select Element]
+                C --> D{Element Found?}
+                D -->|Yes| E[Return Position]
+                D -->|No| F[Continue Search]
+                F --> G{More Elements?}
+                G -->|Yes| C
+                G -->|No| H[Element Not Found]
+                E --> I[End]
+                H --> I
+        `;
+
+    }
+
+
+    // ------------------------------
+    // ALGORITHM
+    // ------------------------------
+
+    else if (
+        lower.includes("algorithm") ||
+        lower.includes("program")
+    ) {
+
+        diagram = `
+            flowchart TD
+                A[Start] --> B[Input]
+                B --> C[Process]
+                C --> D{Condition}
+                D -->|Yes| E[Perform Operation]
+                D -->|No| F[Alternative Operation]
+                E --> G[Output]
+                F --> G
+                G --> H[End]
+        `;
+
+    }
+
+
+    // ------------------------------
+    // DATABASE / SQL
+    // ------------------------------
+
+    else if (
+        lower.includes("sql") ||
+        lower.includes("database") ||
+        lower.includes("dbms")
+    ) {
+
+        diagram = `
+            flowchart TD
+                A[User] --> B[SQL Query]
+                B --> C[Database Management System]
+                C --> D[Process Query]
+                D --> E[Access Database]
+                E --> F[Return Result]
+                F --> A
+        `;
+
+    }
+
+
+    // ------------------------------
+    // COMPUTER NETWORK
+    // ------------------------------
+
+    else if (
+        lower.includes("network") ||
+        lower.includes("tcp") ||
+        lower.includes("http")
+    ) {
+
+        diagram = `
+            flowchart LR
+                A[Sender] --> B[Network]
+                B --> C[Receiver]
+                C --> D[Response]
+                D --> B
+                B --> A
+        `;
+
+    }
+
+
+    // ------------------------------
+    // OPERATING SYSTEM
+    // ------------------------------
+
+    else if (
+        lower.includes("operating system") ||
+        lower.includes("os")
+    ) {
+
+        diagram = `
+            flowchart TD
+                A[User] --> B[Application]
+                B --> C[Operating System]
+                C --> D[Hardware]
+                D --> C
+                C --> B
+                B --> A
+        `;
+
+    }
+
+
+    // ------------------------------
+    // DEFAULT
+    // ------------------------------
+
+    else {
+
+        diagram = `
+            flowchart TD
+                A[Start] --> B[Understand Topic]
+                B --> C[Learn Main Concepts]
+                C --> D[Apply Knowledge]
+                D --> E[Review]
+                E --> F[End]
+        `;
+    }
+
+
+    target.innerHTML = `
+        <div class="note-diagram">
+            <div
+                class="mermaid"
+            >${diagram.trim()}</div>
+        </div>
+    `;
 }
 
 
 // ==========================================
-// HIDE ALL CONTROLS
+// HIDE CONTROLS
 // ==========================================
 
 function hideAllControls() {
 
-    const notesControls =
+    const notes =
         document.getElementById(
             "notesControls"
         );
 
-    const handwrittenControls =
+    const handwritten =
         document.getElementById(
             "handwrittenControls"
         );
 
-    const customNotesPages =
+    const customNotes =
         document.getElementById(
             "customNotesPages"
         );
 
-    const customHandwrittenPages =
+    const customHandwritten =
         document.getElementById(
             "customHandwrittenPages"
         );
 
 
-    if (notesControls) {
+    if (notes) {
 
-        notesControls.classList.add(
+        notes.classList.add(
             "hidden"
         );
     }
 
 
-    if (handwrittenControls) {
+    if (handwritten) {
 
-        handwrittenControls.classList.add(
+        handwritten.classList.add(
             "hidden"
         );
     }
 
 
-    if (customNotesPages) {
+    if (customNotes) {
 
-        customNotesPages.classList.add(
+        customNotes.classList.add(
             "hidden"
         );
     }
 
 
-    if (customHandwrittenPages) {
+    if (customHandwritten) {
 
-        customHandwrittenPages.classList.add(
+        customHandwritten.classList.add(
             "hidden"
         );
     }
@@ -382,7 +546,7 @@ function showHandwrittenControls() {
 
 
 // ==========================================
-// GET PAGE COUNT
+// PAGE COUNT
 // ==========================================
 
 function getPageCount(
@@ -395,13 +559,13 @@ function getPageCount(
             selectId
         );
 
-    const customInput =
+    const custom =
         document.getElementById(
             customInputId
         );
 
 
-    let pageCount = 1;
+    let count = 1;
 
 
     if (select) {
@@ -410,14 +574,14 @@ function getPageCount(
             select.value === "custom"
         ) {
 
-            pageCount =
+            count =
                 parseInt(
-                    customInput?.value
+                    custom?.value
                 ) || 1;
 
         } else {
 
-            pageCount =
+            count =
                 parseInt(
                     select.value
                 ) || 1;
@@ -428,7 +592,7 @@ function getPageCount(
     return Math.max(
         1,
         Math.min(
-            pageCount,
+            count,
             10
         )
     );
@@ -436,7 +600,7 @@ function getPageCount(
 
 
 // ==========================================
-// SPLIT INTO PAGES
+// SPLIT PAGES
 // ==========================================
 
 function splitPages(text) {
@@ -483,6 +647,24 @@ function splitPages(text) {
 
 
 // ==========================================
+// REMOVE PDF BUTTON
+// ==========================================
+
+function removePDFButton() {
+
+    const old =
+        document.querySelector(
+            ".pdf-button-container"
+        );
+
+
+    if (old) {
+        old.remove();
+    }
+}
+
+
+// ==========================================
 // ADD PDF BUTTON
 // ==========================================
 
@@ -520,28 +702,26 @@ function addPDFButton(
         );
 
 
-    button.className =
-        "pdf-button";
-
-
     button.type =
         "button";
 
 
-    button.innerText =
+    button.className =
+        "pdf-button";
+
+
+    button.innerHTML =
         "📄 Download PDF";
 
 
-    button.addEventListener(
-        "click",
+    button.onclick =
         function () {
 
             downloadPDF(
                 filename
             );
 
-        }
-    );
+        };
 
 
     container.appendChild(
@@ -549,8 +729,7 @@ function addPDFButton(
     );
 
 
-    answer.insertAdjacentElement(
-        "afterend",
+    answer.appendChild(
         container
     );
 }
@@ -606,6 +785,96 @@ async function downloadPDF(
 
     try {
 
+        // Create a clean temporary copy
+        const pdfContainer =
+            document.createElement(
+                "div"
+            );
+
+
+        pdfContainer.style.position =
+            "fixed";
+
+        pdfContainer.style.left =
+            "-100000px";
+
+        pdfContainer.style.top =
+            "0";
+
+        pdfContainer.style.width =
+            "794px";
+
+        pdfContainer.style.background =
+            "#ffffff";
+
+        pdfContainer.style.padding =
+            "30px";
+
+        pdfContainer.style.boxSizing =
+            "border-box";
+
+        pdfContainer.style.color =
+            "#222";
+
+
+        // Copy only the generated pages
+        const pages =
+            answer.querySelectorAll(
+                ".normal-note-page, .handwritten-note"
+            );
+
+
+        pages.forEach(
+            function (page) {
+
+                const clone =
+                    page.cloneNode(true);
+
+
+                clone.style.width =
+                    "100%";
+
+                clone.style.maxWidth =
+                    "none";
+
+                clone.style.margin =
+                    "0 0 30px 0";
+
+                clone.style.transform =
+                    "none";
+
+                clone.style.animation =
+                    "none";
+
+                clone.style.boxShadow =
+                    "none";
+
+
+                pdfContainer.appendChild(
+                    clone
+                );
+            }
+        );
+
+
+        document.body.appendChild(
+            pdfContainer
+        );
+
+
+        // Give browser time to render
+        await new Promise(
+            function (resolve) {
+
+                setTimeout(
+                    resolve,
+                    300
+                );
+
+            }
+        );
+
+
         const options = {
 
             margin: 10,
@@ -624,6 +893,9 @@ async function downloadPDF(
             html2canvas: {
 
                 scale: 2,
+
+                backgroundColor:
+                    "#ffffff",
 
                 useCORS: true,
 
@@ -656,14 +928,18 @@ async function downloadPDF(
 
         await html2pdf()
             .set(options)
-            .from(answer)
+            .from(pdfContainer)
             .save();
+
+
+        // Remove temporary copy
+        pdfContainer.remove();
 
 
     } catch (error) {
 
         console.error(
-            "PDF error:",
+            "PDF creation error:",
             error
         );
 
@@ -672,8 +948,18 @@ async function downloadPDF(
             "Unable to create PDF. Please try again."
         );
 
-
     } finally {
+
+        const temporary =
+            document.querySelector(
+                "body > div[style*='-100000px']"
+            );
+
+
+        if (temporary) {
+            temporary.remove();
+        }
+
 
         if (button) {
 
@@ -785,7 +1071,6 @@ async function askAI() {
     } catch (error) {
 
         console.error(
-            "Ask AI error:",
             error
         );
 
@@ -841,45 +1126,12 @@ async function makeNotes() {
     const diagramChoice =
         document.getElementById(
             "notesDiagram"
-        )?.value || "no";
+        )?.value ||
+        "no";
 
 
     answer.innerText =
         "📝 Creating your notes...";
-
-
-    let diagramInstruction = "";
-
-
-    if (
-        diagramChoice === "yes"
-    ) {
-
-        diagramInstruction = `
-
-IMPORTANT:
-The user selected "Include Diagram: Yes".
-
-You MUST include exactly ONE useful diagram.
-
-Use Mermaid syntax.
-
-The Mermaid diagram MUST be placed at the end of the notes.
-
-Use exactly this format:
-
-\`\`\`mermaid
-flowchart TD
-    A[Start] --> B[Process]
-    B --> C[End]
-\`\`\`
-
-Replace the example with a diagram relevant to the topic.
-
-Do NOT omit the diagram.
-`;
-
-    }
 
 
     try {
@@ -928,8 +1180,7 @@ Rules:
 - Include definitions, important points, key concepts, examples, formulas, algorithms, applications or exam points when relevant.
 - Use headings and bullet points where useful.
 - Make the notes easy to revise.
-- Do not mention these instructions.
-${diagramInstruction}`
+- Do not mention these instructions.`
 
                     })
 
@@ -972,7 +1223,7 @@ ${diagramInstruction}`
             );
 
 
-        let pagesHTML = "";
+        let html = "";
 
 
         pages.forEach(
@@ -981,7 +1232,7 @@ ${diagramInstruction}`
                 index
             ) {
 
-                pagesHTML += `
+                html += `
 
                     <div
                         class="normal-note-page pdf-page"
@@ -996,11 +1247,9 @@ ${diagramInstruction}`
                         <div
                             class="note-content"
                         >
-
                             ${formatAnswer(
                                 content
                             )}
-
                         </div>
 
                     </div>
@@ -1011,17 +1260,72 @@ ${diagramInstruction}`
 
 
         answer.innerHTML =
-            pagesHTML;
+            html;
 
 
-        // Render diagram if present
-        await renderDiagrams();
+        // Create diagram separately
+        if (
+            diagramChoice === "yes"
+        ) {
+
+            const diagramArea =
+                document.createElement(
+                    "div"
+                );
 
 
-        // ALWAYS show PDF button
+            diagramArea.className =
+                "normal-note-page pdf-page";
+
+
+            diagramArea.innerHTML = `
+                <div
+                    class="note-page-number"
+                >
+                    Diagram
+                </div>
+
+                <div class="note-content">
+                    <h2>📊 Diagram</h2>
+                </div>
+            `;
+
+
+            answer.appendChild(
+                diagramArea
+            );
+
+
+            const diagramTarget =
+                document.createElement(
+                    "div"
+                );
+
+
+            diagramArea
+                .querySelector(
+                    ".note-content"
+                )
+                .appendChild(
+                    diagramTarget
+                );
+
+
+            createTopicDiagram(
+                question,
+                diagramTarget
+            );
+
+
+            await renderDiagrams();
+        }
+
+
+        // PDF button
         addPDFButton(
             "StudySphere-Notes.pdf"
         );
+
 
     } catch (error) {
 
@@ -1083,8 +1387,7 @@ async function handwrittenNotes() {
         document
             .getElementById(
                 "pageBackground"
-            )
-            ?.value ||
+            )?.value ||
         "lined";
 
 
@@ -1092,8 +1395,7 @@ async function handwrittenNotes() {
         document
             .getElementById(
                 "handwrittenFont"
-            )
-            ?.value ||
+            )?.value ||
         "caveat";
 
 
@@ -1101,47 +1403,12 @@ async function handwrittenNotes() {
         document
             .getElementById(
                 "handwrittenDiagram"
-            )
-            ?.value ||
+            )?.value ||
         "no";
 
 
     answer.innerHTML =
         "✍️ Creating handwritten notes...";
-
-
-    let diagramInstruction = "";
-
-
-    if (
-        diagramChoice === "yes"
-    ) {
-
-        diagramInstruction = `
-
-IMPORTANT:
-The user selected "Include Diagram: Yes".
-
-You MUST include exactly ONE useful diagram.
-
-Use Mermaid syntax.
-
-The Mermaid diagram MUST be placed at the end of the notes.
-
-Use exactly this format:
-
-\`\`\`mermaid
-flowchart TD
-    A[Start] --> B[Process]
-    B --> C[End]
-\`\`\`
-
-Replace the example with a diagram relevant to the topic.
-
-Do NOT omit the diagram.
-`;
-
-    }
 
 
     try {
@@ -1184,14 +1451,13 @@ Continue only up to PAGE ${pageCount}.
 
 Rules:
 1. Stay completely focused on the topic.
-2. Do not repeat the same information.
+2. Do not repeat information.
 3. Each page should contain useful new information.
 4. Use simple language suitable for a college student.
 5. Include definitions, important points, examples, formulas, algorithms, applications or exam points when relevant.
 6. Use headings and bullet points where useful.
 7. Keep the content suitable for handwritten study notes.
-8. Do not mention these instructions.
-${diagramInstruction}`
+8. Do not mention these instructions.`
 
                     })
 
@@ -1234,7 +1500,7 @@ ${diagramInstruction}`
             );
 
 
-        let pagesHTML = "";
+        let html = "";
 
 
         pages.forEach(
@@ -1243,7 +1509,7 @@ ${diagramInstruction}`
                 index
             ) {
 
-                pagesHTML += `
+                html += `
 
                     <div
                         class="
@@ -1278,17 +1544,78 @@ ${diagramInstruction}`
 
 
         answer.innerHTML =
-            pagesHTML;
+            html;
 
 
-        // Render diagram if present
-        await renderDiagrams();
+        // Create diagram separately
+        if (
+            diagramChoice === "yes"
+        ) {
+
+            const diagramArea =
+                document.createElement(
+                    "div"
+                );
 
 
-        // ALWAYS show PDF button
+            diagramArea.className = `
+                handwritten-note
+                pdf-page
+                background-${background}
+                font-${font}
+            `;
+
+
+            diagramArea.innerHTML = `
+                <div
+                    class="note-page-number"
+                >
+                    Diagram
+                </div>
+
+                <div class="note-content">
+
+                    <h2>📊 Diagram</h2>
+
+                </div>
+            `;
+
+
+            answer.appendChild(
+                diagramArea
+            );
+
+
+            const diagramTarget =
+                document.createElement(
+                    "div"
+                );
+
+
+            diagramArea
+                .querySelector(
+                    ".note-content"
+                )
+                .appendChild(
+                    diagramTarget
+                );
+
+
+            createTopicDiagram(
+                question,
+                diagramTarget
+            );
+
+
+            await renderDiagrams();
+        }
+
+
+        // PDF button
         addPDFButton(
             "StudySphere-Handwritten-Notes.pdf"
         );
+
 
     } catch (error) {
 
@@ -1315,7 +1642,7 @@ document.addEventListener(
         hideAllControls();
 
 
-        // NOTES CUSTOM PAGE COUNT
+        // Notes custom pages
 
         const notesPageNumber =
             document.getElementById(
@@ -1362,7 +1689,7 @@ document.addEventListener(
         }
 
 
-        // HANDWRITTEN CUSTOM PAGE COUNT
+        // Handwritten custom pages
 
         const handwrittenPageNumber =
             document.getElementById(
@@ -1410,4 +1737,5 @@ document.addEventListener(
 
     }
 );
+````
 
