@@ -10,6 +10,20 @@ function formatAnswer(text) {
         .replace(/>/g, "&gt;")
 
         .replace(
+            /```mermaid\s*([\s\S]*?)```/gi,
+            function(match, diagram) {
+
+                return `
+                    <div class="note-diagram">
+                        <div class="mermaid">
+                            ${diagram.trim()}
+                        </div>
+                    </div>
+                `;
+            }
+        )
+
+        .replace(
             /\*\*\*(.*?)\*\*\*/g,
             "<strong><em>$1</em></strong>"
         )
@@ -67,22 +81,82 @@ function formatAnswer(text) {
 
 
 // ==========================================
+// INITIALIZE MERMAID
+// ==========================================
+
+if (typeof mermaid !== "undefined") {
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose"
+    });
+
+}
+
+
+// ==========================================
+// RENDER DIAGRAMS
+// ==========================================
+
+async function renderDiagrams() {
+
+    if (
+        typeof mermaid === "undefined"
+    ) {
+        return;
+    }
+
+    const diagrams =
+        document.querySelectorAll(
+            ".mermaid"
+        );
+
+    if (!diagrams.length) {
+        return;
+    }
+
+    try {
+
+        await mermaid.run({
+            nodes: diagrams
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Diagram rendering error:",
+            error
+        );
+
+    }
+}
+
+
+// ==========================================
 // HIDE ALL CONTROLS
 // ==========================================
 
 function hideAllControls() {
 
     const notesControls =
-        document.getElementById("notesControls");
+        document.getElementById(
+            "notesControls"
+        );
 
     const handwrittenControls =
-        document.getElementById("handwrittenControls");
+        document.getElementById(
+            "handwrittenControls"
+        );
 
     const customNotesPages =
-        document.getElementById("customNotesPages");
+        document.getElementById(
+            "customNotesPages"
+        );
 
     const customHandwrittenPages =
-        document.getElementById("customHandwrittenPages");
+        document.getElementById(
+            "customHandwrittenPages"
+        );
 
 
     if (notesControls) {
@@ -112,10 +186,14 @@ function showNotesControls() {
     hideAllControls();
 
     const notesControls =
-        document.getElementById("notesControls");
+        document.getElementById(
+            "notesControls"
+        );
 
     if (notesControls) {
-        notesControls.classList.remove("hidden");
+        notesControls.classList.remove(
+            "hidden"
+        );
     }
 }
 
@@ -129,10 +207,14 @@ function showHandwrittenControls() {
     hideAllControls();
 
     const handwrittenControls =
-        document.getElementById("handwrittenControls");
+        document.getElementById(
+            "handwrittenControls"
+        );
 
     if (handwrittenControls) {
-        handwrittenControls.classList.remove("hidden");
+        handwrittenControls.classList.remove(
+            "hidden"
+        );
     }
 }
 
@@ -141,13 +223,20 @@ function showHandwrittenControls() {
 // GET PAGE COUNT
 // ==========================================
 
-function getPageCount(selectId, customInputId) {
+function getPageCount(
+    selectId,
+    customInputId
+) {
 
     const pageSelect =
-        document.getElementById(selectId);
+        document.getElementById(
+            selectId
+        );
 
     const customPageInput =
-        document.getElementById(customInputId);
+        document.getElementById(
+            customInputId
+        );
 
 
     let pageCount = 1;
@@ -155,7 +244,9 @@ function getPageCount(selectId, customInputId) {
 
     if (pageSelect) {
 
-        if (pageSelect.value === "custom") {
+        if (
+            pageSelect.value === "custom"
+        ) {
 
             pageCount =
                 parseInt(
@@ -172,7 +263,6 @@ function getPageCount(selectId, customInputId) {
     }
 
 
-    // Maximum 10 pages per generation
     pageCount =
         Math.max(
             1,
@@ -216,7 +306,6 @@ function splitPages(text) {
     }
 
 
-    // If AI didn't create PAGE headings
     if (pages.length === 0) {
 
         pages.push(
@@ -226,6 +315,199 @@ function splitPages(text) {
 
 
     return pages;
+}
+
+
+// ==========================================
+// ADD PDF BUTTON
+// ==========================================
+
+function addPDFButton(
+    type,
+    filename
+) {
+
+    const answer =
+        document.getElementById(
+            "answer"
+        );
+
+
+    const oldButton =
+        document.querySelector(
+            ".pdf-button-container"
+        );
+
+
+    if (oldButton) {
+        oldButton.remove();
+    }
+
+
+    const container =
+        document.createElement(
+            "div"
+        );
+
+
+    container.className =
+        "pdf-button-container";
+
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.className =
+        "pdf-button";
+
+
+    button.innerText =
+        "📄 Download PDF";
+
+
+    button.onclick =
+        function () {
+
+            downloadPDF(
+                type,
+                filename
+            );
+
+        };
+
+
+    container.appendChild(
+        button
+    );
+
+
+    answer.insertAdjacentElement(
+        "afterend",
+        container
+    );
+}
+
+
+// ==========================================
+// DOWNLOAD PDF
+// ==========================================
+
+async function downloadPDF(
+    type,
+    filename
+) {
+
+    if (
+        typeof html2pdf ===
+        "undefined"
+    ) {
+
+        alert(
+            "PDF generator is not available. Please refresh the page and try again."
+        );
+
+        return;
+    }
+
+
+    const answer =
+        document.getElementById(
+            "answer"
+        );
+
+
+    if (!answer) {
+        return;
+    }
+
+
+    const button =
+        document.querySelector(
+            ".pdf-button"
+        );
+
+
+    if (button) {
+
+        button.innerText =
+            "⏳ Creating PDF...";
+
+        button.disabled = true;
+    }
+
+
+    try {
+
+        const options = {
+
+            margin: 10,
+
+            filename:
+                filename,
+
+            image: {
+                type: "jpeg",
+                quality: 0.98
+            },
+
+            html2canvas: {
+                scale: 2,
+
+                useCORS: true,
+
+                logging: false
+            },
+
+            jsPDF: {
+                unit: "mm",
+
+                format: "a4",
+
+                orientation:
+                    "portrait"
+            },
+
+            pagebreak: {
+                mode: [
+                    "css",
+                    "legacy"
+                ]
+            }
+
+        };
+
+
+        await html2pdf()
+            .set(options)
+            .from(answer)
+            .save();
+
+
+    } catch (error) {
+
+        console.error(
+            "PDF error:",
+            error
+        );
+
+        alert(
+            "Unable to create PDF. Please try again."
+        );
+
+    } finally {
+
+        if (button) {
+
+            button.innerText =
+                "📄 Download PDF";
+
+            button.disabled =
+                false;
+        }
+    }
 }
 
 
@@ -240,15 +522,32 @@ async function askAI() {
 
     const question =
         document
-            .getElementById("question")
+            .getElementById(
+                "question"
+            )
             .value;
 
 
     const answer =
-        document.getElementById("answer");
+        document.getElementById(
+            "answer"
+        );
 
 
-    if (question.trim() === "") {
+    const oldButton =
+        document.querySelector(
+            ".pdf-button-container"
+        );
+
+
+    if (oldButton) {
+        oldButton.remove();
+    }
+
+
+    if (
+        question.trim() === ""
+    ) {
 
         answer.innerText =
             "Please enter a question.";
@@ -275,7 +574,8 @@ async function askAI() {
                     },
 
                     body: JSON.stringify({
-                        question: question
+                        question:
+                            question
                     })
                 }
             );
@@ -297,6 +597,8 @@ async function askAI() {
                 formatAnswer(
                     data.answer
                 );
+
+            await renderDiagrams();
         }
 
 
@@ -325,13 +627,28 @@ async function makeNotes() {
 
     const question =
         document
-            .getElementById("question")
+            .getElementById(
+                "question"
+            )
             .value
             .trim();
 
 
     const answer =
-        document.getElementById("answer");
+        document.getElementById(
+            "answer"
+        );
+
+
+    const oldButton =
+        document.querySelector(
+            ".pdf-button-container"
+        );
+
+
+    if (oldButton) {
+        oldButton.remove();
+    }
 
 
     if (!question) {
@@ -343,8 +660,6 @@ async function makeNotes() {
     }
 
 
-    // GET SELECTED PAGE COUNT
-
     const pageCount =
         getPageCount(
             "notesPageNumber",
@@ -352,8 +667,41 @@ async function makeNotes() {
         );
 
 
+    const diagramChoice =
+        document.getElementById(
+            "notesDiagram"
+        )?.value || "no";
+
+
     answer.innerText =
         "📝 Creating your notes...";
+
+
+    let diagramInstruction =
+        "";
+
+
+    if (
+        diagramChoice === "yes"
+    ) {
+
+        diagramInstruction = `
+
+Also include ONE useful diagram when the topic supports it.
+
+Create the diagram using Mermaid syntax.
+
+Use this exact format:
+
+\`\`\`mermaid
+flowchart TD
+    A[Start] --> B[Process]
+    B --> C[End]
+\`\`\`
+
+Only include a diagram that is relevant to the topic.
+`;
+    }
 
 
     try {
@@ -399,7 +747,8 @@ Rules:
 - Include definitions, important points, key concepts, examples, formulas, algorithms, applications or exam points when relevant.
 - Use headings and bullet points where useful.
 - Make the notes easy to revise.
-- Do not mention these instructions.`
+- Do not mention these instructions.
+${diagramInstruction}`
                     })
                 }
             );
@@ -409,14 +758,10 @@ Rules:
             await response.json();
 
 
-        console.log(
-            "Notes response:",
-            data
-        );
-
-
-        if (!response.ok ||
-            data.error) {
+        if (
+            !response.ok ||
+            data.error
+        ) {
 
             answer.innerText =
                 "Error: " +
@@ -439,7 +784,9 @@ Rules:
 
 
         const pages =
-            splitPages(data.answer);
+            splitPages(
+                data.answer
+            );
 
 
         let pagesHTML = "";
@@ -450,14 +797,16 @@ Rules:
 
                 pagesHTML += `
 
-                    <div class="normal-note-page">
+                    <div class="normal-note-page pdf-page">
 
                         <div class="note-page-number">
                             Page ${index + 1}
                         </div>
 
                         <div class="note-content">
+
                             ${formatAnswer(content)}
+
                         </div>
 
                     </div>
@@ -469,6 +818,15 @@ Rules:
 
         answer.innerHTML =
             pagesHTML;
+
+
+        await renderDiagrams();
+
+
+        addPDFButton(
+            "notes",
+            "StudySphere-Notes.pdf"
+        );
 
 
     } catch (error) {
@@ -496,13 +854,28 @@ async function handwrittenNotes() {
 
     const question =
         document
-            .getElementById("question")
+            .getElementById(
+                "question"
+            )
             .value
             .trim();
 
 
     const answer =
-        document.getElementById("answer");
+        document.getElementById(
+            "answer"
+        );
+
+
+    const oldButton =
+        document.querySelector(
+            ".pdf-button-container"
+        );
+
+
+    if (oldButton) {
+        oldButton.remove();
+    }
 
 
     if (!question) {
@@ -514,8 +887,6 @@ async function handwrittenNotes() {
     }
 
 
-    // GET PAGE COUNT
-
     const pageCount =
         getPageCount(
             "handwrittenPageNumber",
@@ -523,8 +894,59 @@ async function handwrittenNotes() {
         );
 
 
+    const background =
+        document
+            .getElementById(
+                "pageBackground"
+            )
+            ?.value ||
+        "lined";
+
+
+    const font =
+        document
+            .getElementById(
+                "handwrittenFont"
+            )
+            ?.value ||
+        "caveat";
+
+
+    const diagramChoice =
+        document.getElementById(
+            "handwrittenDiagram"
+        )?.value || "no";
+
+
     answer.innerHTML =
         "✍️ Creating handwritten notes...";
+
+
+    let diagramInstruction =
+        "";
+
+
+    if (
+        diagramChoice === "yes"
+    ) {
+
+        diagramInstruction = `
+
+Also include ONE useful diagram when the topic supports it.
+
+Create the diagram using Mermaid syntax.
+
+Use this exact format:
+
+\`\`\`mermaid
+flowchart TD
+    A[Start] --> B[Process]
+    B --> C[End]
+\`\`\`
+
+Only include a diagram that is relevant to the topic.
+`;
+    }
 
 
     try {
@@ -570,7 +992,8 @@ Rules:
 5. Include definitions, important points, examples, formulas, algorithms, applications or exam points when relevant.
 6. Use headings and bullet points where useful.
 7. Keep the content suitable for handwritten study notes.
-8. Do not mention these instructions.`
+8. Do not mention these instructions.
+${diagramInstruction}`
                     })
                 }
             );
@@ -580,8 +1003,10 @@ Rules:
             await response.json();
 
 
-        if (!response.ok ||
-            data.error) {
+        if (
+            !response.ok ||
+            data.error
+        ) {
 
             answer.innerText =
                 "Error: " +
@@ -603,33 +1028,11 @@ Rules:
         }
 
 
-        // ==================================
-        // GET SELECTED STYLE
-        // ==================================
-
-        const background =
-            document
-                .getElementById("pageBackground")
-                ?.value || "lined";
-
-
-        const font =
-            document
-                .getElementById("handwrittenFont")
-                ?.value || "caveat";
-
-
-        // ==================================
-        // SPLIT INTO PAGES
-        // ==================================
-
         const pages =
-            splitPages(data.answer);
+            splitPages(
+                data.answer
+            );
 
-
-        // ==================================
-        // CREATE PAGES
-        // ==================================
 
         let pagesHTML = "";
 
@@ -641,6 +1044,7 @@ Rules:
 
                     <div
                         class="handwritten-note
+                        pdf-page
                         background-${background}
                         font-${font}"
                     >
@@ -664,6 +1068,15 @@ Rules:
 
         answer.innerHTML =
             pagesHTML;
+
+
+        await renderDiagrams();
+
+
+        addPDFButton(
+            "handwritten",
+            "StudySphere-Handwritten-Notes.pdf"
+        );
 
 
     } catch (error) {
