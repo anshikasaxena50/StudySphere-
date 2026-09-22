@@ -1,235 +1,101 @@
 body {
+    margin: 0;
+    padding: 30px 0;
     font-family: Arial, sans-serif;
     background: #f4f7fb;
     text-align: center;
-    padding: 40px 20px;
 }
+
+
+/* ==========================================
+   MAIN TITLE
+========================================== */
 
 h1 {
-    color: #333;
+    margin-bottom: 5px;
 }
 
-p {
-    color: #666;
+body > p {
+    margin-top: 0;
+    color: #555;
 }
 
-input {
+
+/* ==========================================
+   QUESTION BOX
+========================================== */
+
+#question {
     width: 80%;
-    max-width: 500px;
-    padding: 14px;
-    border: 1px solid #ccc;
+    max-width: 700px;
+    padding: 12px 15px;
+    margin: 20px auto;
+
+    border: 1px solid #aaa;
     border-radius: 8px;
+
     font-size: 16px;
+    box-sizing: border-box;
 }
 
-button {
-    margin-top: 15px;
-    padding: 12px 25px;
+
+/* ==========================================
+   MAIN BUTTONS
+========================================== */
+
+.main-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 15px auto;
+}
+
+.main-buttons button {
+    padding: 10px 18px;
+
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+
     cursor: pointer;
-}
-#answer {
-    margin: 25px auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 500px;
-    background: white;
-    border-radius: 10px;
-    font-size: 17px;
-    color: #333;
-    min-height: 30px;
-}
-.handwritten-note {
-    width: 90%;
-    max-width: 700px;
-    margin: 30px auto;
-    padding: 35px 40px;
 
-    text-align: left;
-
-    background:
-        repeating-linear-gradient(
-            transparent,
-            transparent 31px,
-            #b8d4ea 32px
-        );
-
-    background-color: #fffdf3;
-
-    border-left: 6px solid #e57373;
-    border-radius: 3px;
-
-    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.18);
-
-    font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
-    font-size: 18px;
-    line-height: 32px;
-
-    color: #164f91;
-
-    transform: rotate(-0.3deg);
+    font-size: 15px;
 }
 
-/* Handwritten-looking headings */
-.handwritten-note h1,
-.handwritten-note h2,
-.handwritten-note h3 {
-    font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
-    color: #123f78;
-    margin-top: 12px;
-    margin-bottom: 8px;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-}
 
-/* Important words */
-.handwritten-note strong {
-    color: #123f78;
-    font-weight: bold;
-}
+/* ==========================================
+   HIDDEN
+========================================== */
 
-/* Slight handwritten spacing */
-.handwritten-note .list-item {
-    margin-left: 10px;
-    padding-left: 5px;
-}
-
-/* Make the note feel less like a normal webpage */
-.handwritten-note br {
-    line-height: 32px;
-}
-/* Handwritten note customization controls */
-.note-options {
-    width: 90%;
-    max-width: 700px;
-    margin: 20px auto;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-}
-
-.note-options label {
-    font-size: 14px;
-    color: #333;
-    font-weight: bold;
-}
-
-.note-options select,
-.note-options input {
-    width: auto;
-    max-width: none;
-    padding: 8px 10px;
-    margin: 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-#customPages {
-    width: 80px;
-}
-
-/* Different handwritten page backgrounds */
-
-.handwritten-note.plain {
-    background: #ffffff;
-}
-
-.handwritten-note.cream {
-    background: #fff8df;
-}
-
-.handwritten-note.blue {
-    background: #eef7ff;
-}
-
-.handwritten-note.green {
-    background: #effbea;
-}
-
-.handwritten-note.grid {
-    background-color: #fffdf3;
-    background-image:
-        linear-gradient(#c9dceb 1px, transparent 1px),
-        linear-gradient(90deg, #c9dceb 1px, transparent 1px);
-    background-size: 25px 25px;
-}
-
-.handwritten-note.dotted {
-    background-color: #fffdf3;
-    background-image: radial-gradient(#a9c7df 1px, transparent 1px);
-    background-size: 18px 18px;
-}
-
-/* Different handwriting fonts */
-
-.handwritten-note.font-comic {
-    font-family: "Comic Sans MS", cursive;
-}
-
-.handwritten-note.font-segoe {
-    font-family: "Segoe Print", "Bradley Hand", cursive;
-}
-
-.handwritten-note.font-caveat {
-    font-family: "Caveat", "Comic Sans MS", cursive;
-}
-
-.handwritten-note.font-serif {
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-/* Diagram / figure area */
-
-.diagram-container {
-    width: 90%;
-    max-width: 800px;
-    margin: 25px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-    text-align: center;
-}
-
-.diagram-container img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.diagram-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
-}
 .hidden {
     display: none !important;
 }
 
+
+/* ==========================================
+   CONTROLS
+========================================== */
+
 .controls {
     width: 90%;
     max-width: 700px;
+
     margin: 20px auto;
     padding: 15px;
 
     display: flex;
     flex-wrap: wrap;
+
     gap: 12px;
+
     align-items: center;
     justify-content: center;
 
     background: #f5f5f5;
+
     border-radius: 10px;
+
+    box-sizing: border-box;
 }
 
 .controls label {
@@ -239,7 +105,290 @@ button {
 .controls select,
 .controls input {
     padding: 8px 12px;
+
     border-radius: 6px;
+
     border: 1px solid #aaa;
+
     font-size: 14px;
+}
+
+
+/* ==========================================
+   ANSWER AREA
+========================================== */
+
+#answer {
+    width: 100%;
+    margin-top: 25px;
+}
+
+
+/* ==========================================
+   NORMAL NOTES
+========================================== */
+
+.normal-note-page {
+    width: 90%;
+    max-width: 700px;
+
+    margin: 25px auto;
+    padding: 30px 35px;
+
+    box-sizing: border-box;
+
+    text-align: left;
+
+    background: white;
+
+    border-radius: 10px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+
+    line-height: 1.6;
+}
+
+.normal-note-page h1,
+.normal-note-page h2,
+.normal-note-page h3 {
+    margin-top: 15px;
+}
+
+.note-page-number {
+    text-align: right;
+
+    font-size: 14px;
+
+    color: #777;
+
+    margin-bottom: 15px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   HANDWRITTEN NOTE BASE
+========================================== */
+
+.handwritten-note {
+    width: 90%;
+    max-width: 700px;
+
+    min-height: 500px;
+
+    margin: 30px auto;
+
+    padding: 40px;
+
+    box-sizing: border-box;
+
+    text-align: left;
+
+    border-left: 6px solid #e57373;
+
+    border-radius: 4px;
+
+    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.18);
+
+    font-size: 20px;
+
+    line-height: 1.7;
+
+    color: #164f91;
+
+    transform: rotate(-0.3deg);
+
+    position: relative;
+}
+
+
+/* ==========================================
+   HANDWRITTEN HEADINGS
+========================================== */
+
+.handwritten-note h1,
+.handwritten-note h2,
+.handwritten-note h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+
+    color: #123f78;
+
+    text-decoration: underline;
+
+    text-decoration-thickness: 1px;
+}
+
+.handwritten-note strong {
+    color: #123f78;
+}
+
+.handwritten-note .list-item {
+    margin-left: 10px;
+}
+
+
+/* ==========================================
+   PAGE NUMBER
+========================================== */
+
+.handwritten-note .note-page-number {
+    text-align: right;
+
+    color: #777;
+
+    font-size: 14px;
+
+    margin-bottom: 15px;
+}
+
+
+/* ==========================================
+   BACKGROUND 1 — LINED PAPER
+========================================== */
+
+.background-lined {
+
+    background-color: #fffdf3;
+
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 31px,
+            #b8d4ea 32px
+        );
+}
+
+
+/* ==========================================
+   BACKGROUND 2 — PLAIN PAPER
+========================================== */
+
+.background-plain {
+
+    background-color: #fffdf3;
+
+    background-image: none;
+}
+
+
+/* ==========================================
+   BACKGROUND 3 — GRID PAPER
+========================================== */
+
+.background-grid {
+
+    background-color: #fffdf3;
+
+    background-image:
+        linear-gradient(
+            #d5e3ef 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            #d5e3ef 1px,
+            transparent 1px
+        );
+
+    background-size: 25px 25px;
+}
+
+
+/* ==========================================
+   BACKGROUND 4 — YELLOW NOTEBOOK
+========================================== */
+
+.background-yellow {
+
+    background-color: #fff4a8;
+
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 31px,
+            #d8c76b 32px
+        );
+}
+
+
+/* ==========================================
+   5 HANDWRITING FONTS
+========================================== */
+
+/* 1. Caveat */
+
+.font-caveat {
+    font-family:
+        "Caveat",
+        "Segoe Print",
+        cursive;
+}
+
+
+/* 2. Kalam */
+
+.font-kalam {
+    font-family:
+        "Kalam",
+        "Comic Sans MS",
+        cursive;
+}
+
+
+/* 3. Patrick Hand */
+
+.font-patrick {
+    font-family:
+        "Patrick Hand",
+        "Segoe Print",
+        cursive;
+}
+
+
+/* 4. Indie Flower */
+
+.font-indie {
+    font-family:
+        "Indie Flower",
+        "Comic Sans MS",
+        cursive;
+}
+
+
+/* 5. Shadows Into Light */
+
+.font-shadows {
+    font-family:
+        "Shadows Into Light",
+        "Segoe Print",
+        cursive;
+}
+
+
+/* ==========================================
+   FONT SIZES
+========================================== */
+
+.font-caveat {
+    font-size: 22px;
+}
+
+.font-kalam {
+    font-size: 20px;
+}
+
+.font-patrick {
+    font-size: 21px;
+}
+
+.font-indie {
+    font-size: 20px;
+}
+
+.font-shadows {
+    font-size: 21px;
 }
