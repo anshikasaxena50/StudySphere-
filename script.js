@@ -22,6 +22,7 @@ function formatAnswer(text) {
 // =========================
 
 async function askAI() {
+    hideAllControls();
     const question = document.getElementById("question").value;
     const answer = document.getElementById("answer");
 
@@ -68,6 +69,7 @@ async function askAI() {
 // =========================
 
 async function makeNotes() {
+    showNotesControls();
     const question = document.getElementById("question").value.trim();
     const answer = document.getElementById("answer");
 
@@ -126,6 +128,7 @@ async function makeNotes() {
     }
 }
 async function handwrittenNotes() {
+    showHandwrittenControls();
     const question = document.getElementById("question").value.trim();
     const answer = document.getElementById("answer");
 
