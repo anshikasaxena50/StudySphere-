@@ -4,7 +4,7 @@ function formatAnswer(text) {
         return "";
     }
 
-    // Temporarily protect Mermaid blocks
+    // Protect Mermaid blocks
     const diagrams = [];
 
     text = text.replace(
@@ -96,7 +96,7 @@ function formatAnswer(text) {
     );
 
 
-    // Restore Mermaid blocks
+    // Restore Mermaid
     diagrams.forEach(
         function (diagram, index) {
 
@@ -184,6 +184,7 @@ async function renderDiagrams() {
             element.dataset.rendered ===
             "true"
         ) {
+
             continue;
         }
 
@@ -240,7 +241,7 @@ async function renderDiagrams() {
 
 
 // ==========================================
-// CREATE A DIAGRAM FROM TOPIC
+// CREATE TOPIC DIAGRAM
 // ==========================================
 
 function createTopicDiagram(
@@ -260,10 +261,7 @@ function createTopicDiagram(
     let diagram = "";
 
 
-    // ------------------------------
     // SORTING
-    // ------------------------------
-
     if (
         lower.includes("sort") ||
         lower.includes("sorting")
@@ -284,10 +282,7 @@ function createTopicDiagram(
     }
 
 
-    // ------------------------------
     // SEARCHING
-    // ------------------------------
-
     else if (
         lower.includes("search")
     ) {
@@ -309,10 +304,7 @@ function createTopicDiagram(
     }
 
 
-    // ------------------------------
-    // ALGORITHM
-    // ------------------------------
-
+    // ALGORITHM / PROGRAM
     else if (
         lower.includes("algorithm") ||
         lower.includes("program")
@@ -333,10 +325,7 @@ function createTopicDiagram(
     }
 
 
-    // ------------------------------
     // DATABASE / SQL
-    // ------------------------------
-
     else if (
         lower.includes("sql") ||
         lower.includes("database") ||
@@ -346,7 +335,7 @@ function createTopicDiagram(
         diagram = `
             flowchart TD
                 A[User] --> B[SQL Query]
-                B --> C[Database Management System]
+                B --> C[DBMS]
                 C --> D[Process Query]
                 D --> E[Access Database]
                 E --> F[Return Result]
@@ -356,10 +345,7 @@ function createTopicDiagram(
     }
 
 
-    // ------------------------------
-    // COMPUTER NETWORK
-    // ------------------------------
-
+    // NETWORK
     else if (
         lower.includes("network") ||
         lower.includes("tcp") ||
@@ -378,10 +364,7 @@ function createTopicDiagram(
     }
 
 
-    // ------------------------------
     // OPERATING SYSTEM
-    // ------------------------------
-
     else if (
         lower.includes("operating system") ||
         lower.includes("os")
@@ -400,10 +383,7 @@ function createTopicDiagram(
     }
 
 
-    // ------------------------------
     // DEFAULT
-    // ------------------------------
-
     else {
 
         diagram = `
@@ -419,9 +399,7 @@ function createTopicDiagram(
 
     target.innerHTML = `
         <div class="note-diagram">
-            <div
-                class="mermaid"
-            >${diagram.trim()}</div>
+            <div class="mermaid">${diagram.trim()}</div>
         </div>
     `;
 }
@@ -455,34 +433,22 @@ function hideAllControls() {
 
 
     if (notes) {
-
-        notes.classList.add(
-            "hidden"
-        );
+        notes.classList.add("hidden");
     }
 
 
     if (handwritten) {
-
-        handwritten.classList.add(
-            "hidden"
-        );
+        handwritten.classList.add("hidden");
     }
 
 
     if (customNotes) {
-
-        customNotes.classList.add(
-            "hidden"
-        );
+        customNotes.classList.add("hidden");
     }
 
 
     if (customHandwritten) {
-
-        customHandwritten.classList.add(
-            "hidden"
-        );
+        customHandwritten.classList.add("hidden");
     }
 }
 
@@ -536,7 +502,7 @@ function showHandwrittenControls() {
 
 
 // ==========================================
-// PAGE COUNT
+// GET PAGE COUNT
 // ==========================================
 
 function getPageCount(
@@ -705,7 +671,7 @@ function addPDFButton(
 
 
     button.onclick =
-        function () {
+        function() {
 
             downloadPDF(
                 filename
@@ -727,130 +693,112 @@ function addPDFButton(
 
 // ==========================================
 // DOWNLOAD PDF
-// =========================================
+// ==========================================
+
 async function downloadPDF(filename) {
 
-    if (typeof html2pdf === "undefined") {
+    if (
+        typeof html2pdf === "undefined"
+    ) {
 
-        alert("PDF generator is not loaded. Please refresh the page.");
+        alert(
+            "PDF generator is not loaded. Please refresh the page."
+        );
 
         return;
     }
 
-    const answer = document.getElementById("answer");
+
+    const answer =
+        document.getElementById(
+            "answer"
+        );
+
 
     if (!answer) {
         return;
     }
 
-    const button = document.querySelector(".pdf-button");
+
+    const buttonContainer =
+        answer.querySelector(
+            ".pdf-button-container"
+        );
+
+
+    const button =
+        answer.querySelector(
+            ".pdf-button"
+        );
+
 
     if (button) {
-        button.innerText = "⏳ Creating PDF...";
-        button.disabled = true;
+
+        button.innerText =
+            "⏳ Creating PDF...";
+
+        button.disabled =
+            true;
     }
 
-    let pdfContainer = null;
 
     try {
 
         // ==================================
-        // CREATE PDF CONTAINER
+        // HIDE ONLY THE PDF BUTTON
         // ==================================
 
-        pdfContainer = document.createElement("div");
+        if (buttonContainer) {
 
-        pdfContainer.id = "studysphere-pdf-container";
-
-        pdfContainer.style.position = "fixed";
-        pdfContainer.style.left = "10px";
-        pdfContainer.style.top = "10px";
-        pdfContainer.style.width = "794px";
-        pdfContainer.style.background = "#ffffff";
-        pdfContainer.style.padding = "20px";
-        pdfContainer.style.boxSizing = "border-box";
-
-        // IMPORTANT:
-        // Do NOT use z-index:-1
-        // Do NOT use display:none
-        // Do NOT use visibility:hidden
-
-        pdfContainer.style.zIndex = "999999";
-        pdfContainer.style.opacity = "0.01";
-        pdfContainer.style.pointerEvents = "none";
-
-        // ==================================
-        // GET NOTE PAGES
-        // ==================================
-
-        const pages = answer.querySelectorAll(
-            ".normal-note-page, .handwritten-note"
-        );
-
-        if (!pages.length) {
-
-            throw new Error("No note pages found.");
+            buttonContainer.style.display =
+                "none";
         }
 
-        // ==================================
-        // COPY EACH PAGE
-        // ==================================
-
-        pages.forEach(function(page) {
-
-            const clone = page.cloneNode(true);
-
-            // Remove animations
-            clone.style.animation = "none";
-
-            // Remove handwritten rotation
-            clone.style.transform = "none";
-
-            // Remove shadows
-            clone.style.boxShadow = "none";
-
-            // PDF width
-            clone.style.width = "100%";
-            clone.style.maxWidth = "none";
-
-            // Spacing
-            clone.style.margin = "0 0 20px 0";
-
-            clone.style.boxSizing = "border-box";
-
-            // Prevent page splitting
-            clone.style.pageBreakInside = "avoid";
-            clone.style.breakInside = "avoid";
-
-            pdfContainer.appendChild(clone);
-        });
 
         // ==================================
-        // ADD TO DOCUMENT
+        // FORCE CONTENT TO BE VISIBLE
         // ==================================
 
-        document.body.appendChild(pdfContainer);
+        answer.style.display =
+            "block";
+
+        answer.style.visibility =
+            "visible";
+
+        answer.style.opacity =
+            "1";
+
 
         // ==================================
         // WAIT FOR RENDERING
         // ==================================
 
-        await new Promise(function(resolve) {
+        await new Promise(
+            function(resolve) {
 
-            requestAnimationFrame(function() {
+                requestAnimationFrame(
+                    function() {
 
-                requestAnimationFrame(function() {
+                        requestAnimationFrame(
+                            function() {
 
-                    setTimeout(resolve, 300);
+                                setTimeout(
+                                    resolve,
+                                    500
+                                );
 
-                });
+                            }
+                        );
 
-            });
+                    }
+                );
 
-        });
+            }
+        );
+
 
         // ==================================
-        // CREATE PDF
+        // PDF OPTIONS
         // ==================================
 
         const options = {
@@ -860,8 +808,11 @@ async function downloadPDF(filename) {
             filename: filename,
 
             image: {
+
                 type: "jpeg",
+
                 quality: 0.98
+
             },
 
             html2canvas: {
@@ -872,17 +823,15 @@ async function downloadPDF(filename) {
 
                 allowTaint: true,
 
-                backgroundColor: "#ffffff",
+                backgroundColor:
+                    "#ffffff",
 
-                logging: false,
+                logging: true,
 
                 scrollX: 0,
 
-                scrollY: 0,
+                scrollY: 0
 
-                windowWidth: 794,
-
-                windowHeight: pdfContainer.scrollHeight
             },
 
             jsPDF: {
@@ -891,9 +840,11 @@ async function downloadPDF(filename) {
 
                 format: "a4",
 
-                orientation: "portrait",
+                orientation:
+                    "portrait",
 
                 compress: true
+
             },
 
             pagebreak: {
@@ -901,49 +852,58 @@ async function downloadPDF(filename) {
                 mode: [
                     "css",
                     "legacy"
-                ]
+                ],
+
+                before: ".pdf-page"
+
             }
+
         };
+
+
+        // ==================================
+        // CAPTURE ACTUAL ANSWER
+        // ==================================
 
         await html2pdf()
             .set(options)
-            .from(pdfContainer)
+            .from(answer)
             .save();
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "StudySphere PDF Error:",
             error
         );
 
+
         alert(
             "Unable to create PDF. Please try again."
         );
-    }
 
-    finally {
+
+    } finally {
 
         // ==================================
-        // REMOVE TEMPORARY CONTAINER
+        // SHOW PDF BUTTON AGAIN
         // ==================================
 
-        if (pdfContainer) {
+        if (buttonContainer) {
 
-            pdfContainer.remove();
+            buttonContainer.style.display =
+                "";
         }
 
-        // ==================================
-        // RESET BUTTON
-        // ==================================
 
         if (button) {
 
-            button.innerText = "📄 Download PDF";
+            button.innerText =
+                "📄 Download PDF";
 
-            button.disabled = false;
+            button.disabled =
+                false;
         }
     }
 }
@@ -1203,7 +1163,7 @@ Rules:
 
 
         pages.forEach(
-            function (
+            function(
                 content,
                 index
             ) {
@@ -1239,7 +1199,10 @@ Rules:
             html;
 
 
-        // Create diagram separately
+        // ==================================
+        // DIAGRAM
+        // ==================================
+
         if (
             diagramChoice === "yes"
         ) {
@@ -1255,6 +1218,7 @@ Rules:
 
 
             diagramArea.innerHTML = `
+
                 <div
                     class="note-page-number"
                 >
@@ -1262,8 +1226,11 @@ Rules:
                 </div>
 
                 <div class="note-content">
+
                     <h2>📊 Diagram</h2>
+
                 </div>
+
             `;
 
 
@@ -1297,7 +1264,10 @@ Rules:
         }
 
 
-        // PDF button
+        // ==================================
+        // PDF BUTTON
+        // ==================================
+
         addPDFButton(
             "StudySphere-Notes.pdf"
         );
@@ -1480,7 +1450,7 @@ Rules:
 
 
         pages.forEach(
-            function (
+            function(
                 content,
                 index
             ) {
@@ -1523,7 +1493,10 @@ Rules:
             html;
 
 
-        // Create diagram separately
+        // ==================================
+        // DIAGRAM
+        // ==================================
+
         if (
             diagramChoice === "yes"
         ) {
@@ -1543,6 +1516,7 @@ Rules:
 
 
             diagramArea.innerHTML = `
+
                 <div
                     class="note-page-number"
                 >
@@ -1554,6 +1528,7 @@ Rules:
                     <h2>📊 Diagram</h2>
 
                 </div>
+
             `;
 
 
@@ -1587,7 +1562,10 @@ Rules:
         }
 
 
-        // PDF button
+        // ==================================
+        // PDF BUTTON
+        // ==================================
+
         addPDFButton(
             "StudySphere-Handwritten-Notes.pdf"
         );
@@ -1613,12 +1591,14 @@ Rules:
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    function() {
 
         hideAllControls();
 
 
-        // Notes custom pages
+        // ==================================
+        // NOTES CUSTOM PAGE CONTROL
+        // ==================================
 
         const notesPageNumber =
             document.getElementById(
@@ -1639,10 +1619,11 @@ document.addEventListener(
 
             notesPageNumber.addEventListener(
                 "change",
-                function () {
+                function() {
 
                     if (
-                        this.value === "custom"
+                        this.value ===
+                        "custom"
                     ) {
 
                         customNotesPages
@@ -1665,7 +1646,9 @@ document.addEventListener(
         }
 
 
-        // Handwritten custom pages
+        // ==================================
+        // HANDWRITTEN CUSTOM PAGE CONTROL
+        // ==================================
 
         const handwrittenPageNumber =
             document.getElementById(
@@ -1686,10 +1669,11 @@ document.addEventListener(
 
             handwrittenPageNumber.addEventListener(
                 "change",
-                function () {
+                function() {
 
                     if (
-                        this.value === "custom"
+                        this.value ===
+                        "custom"
                     ) {
 
                         customHandwrittenPages
