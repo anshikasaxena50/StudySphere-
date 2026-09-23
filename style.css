@@ -907,3 +907,113 @@ body > p {
     }
 
 }
+/* ============================= */
+/* STUDY MODE */
+/* ============================= */
+
+.study-mode-section {
+    margin: 10px auto 25px;
+    text-align: center;
+}
+
+.study-mode-button {
+    padding: 14px 28px;
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: #55436f;
+    background: linear-gradient(
+        135deg,
+        #e8ddff,
+        #f8e3f0
+    );
+    box-shadow: 0 8px 22px rgba(93,75,140,.15);
+    transition: .2s ease;
+}
+
+.study-mode-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(93,75,140,.2);
+}
+
+.study-mode {
+    width: 90%;
+    max-width: 720px;
+    margin: 25px auto;
+    padding: 25px;
+    box-sizing: border-box;
+    background: rgba(255,255,255,.78);
+    border: 1px solid #e1dced;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(91,75,120,.1);
+}
+
+.study-mode h2 {
+    margin-top: 0;
+    color: #604b91;
+}
+
+.study-mode > p {
+    color: #7a7189;
+}
+
+.study-topic-box {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.study-topic-box input {
+    flex: 1;
+    padding: 13px 15px;
+    border: 1px solid #ddd6eb;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+}
+
+.study-topic-box button {
+    padding: 13px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #e9ddff;
+    color: #59447d;
+    font-weight: 700;
+}
+
+.study-result {
+    margin-top: 25px;
+}
+
+.study-learn-card {
+    margin-top: 25px;
+    padding: 25px;
+    text-align: left;
+    background: rgba(255,255,255,.9);
+    border-radius: 16px;
+    border: 1px solid #ebe5f3;
+    line-height: 1.7;
+}
+
+.study-learn-card h3 {
+    color: #604b91;
+}
+
+@media (max-width:600px) {
+
+    .study-mode {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .study-topic-box {
+        flex-direction: column;
+    }
+
+    .study-topic-box button {
+        width: 100%;
+    }
+}
