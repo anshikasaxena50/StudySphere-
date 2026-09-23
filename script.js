@@ -4,7 +4,7 @@ function formatAnswer(text) {
         return "";
     }
 
-    // Protect Mermaid blocks
+    // Temporarily protect Mermaid blocks
     const diagrams = [];
 
     text = text.replace(
@@ -96,7 +96,7 @@ function formatAnswer(text) {
     );
 
 
-    // Restore Mermaid
+    // Restore Mermaid blocks
     diagrams.forEach(
         function (diagram, index) {
 
@@ -184,7 +184,6 @@ async function renderDiagrams() {
             element.dataset.rendered ===
             "true"
         ) {
-
             continue;
         }
 
@@ -241,7 +240,7 @@ async function renderDiagrams() {
 
 
 // ==========================================
-// CREATE TOPIC DIAGRAM
+// CREATE A DIAGRAM FROM TOPIC
 // ==========================================
 
 function createTopicDiagram(
@@ -261,7 +260,10 @@ function createTopicDiagram(
     let diagram = "";
 
 
+    // ------------------------------
     // SORTING
+    // ------------------------------
+
     if (
         lower.includes("sort") ||
         lower.includes("sorting")
@@ -282,7 +284,10 @@ function createTopicDiagram(
     }
 
 
+    // ------------------------------
     // SEARCHING
+    // ------------------------------
+
     else if (
         lower.includes("search")
     ) {
@@ -304,7 +309,10 @@ function createTopicDiagram(
     }
 
 
-    // ALGORITHM / PROGRAM
+    // ------------------------------
+    // ALGORITHM
+    // ------------------------------
+
     else if (
         lower.includes("algorithm") ||
         lower.includes("program")
@@ -325,7 +333,10 @@ function createTopicDiagram(
     }
 
 
+    // ------------------------------
     // DATABASE / SQL
+    // ------------------------------
+
     else if (
         lower.includes("sql") ||
         lower.includes("database") ||
@@ -335,7 +346,7 @@ function createTopicDiagram(
         diagram = `
             flowchart TD
                 A[User] --> B[SQL Query]
-                B --> C[DBMS]
+                B --> C[Database Management System]
                 C --> D[Process Query]
                 D --> E[Access Database]
                 E --> F[Return Result]
@@ -345,7 +356,10 @@ function createTopicDiagram(
     }
 
 
-    // NETWORK
+    // ------------------------------
+    // COMPUTER NETWORK
+    // ------------------------------
+
     else if (
         lower.includes("network") ||
         lower.includes("tcp") ||
@@ -364,7 +378,10 @@ function createTopicDiagram(
     }
 
 
+    // ------------------------------
     // OPERATING SYSTEM
+    // ------------------------------
+
     else if (
         lower.includes("operating system") ||
         lower.includes("os")
@@ -383,7 +400,10 @@ function createTopicDiagram(
     }
 
 
+    // ------------------------------
     // DEFAULT
+    // ------------------------------
+
     else {
 
         diagram = `
@@ -399,7 +419,9 @@ function createTopicDiagram(
 
     target.innerHTML = `
         <div class="note-diagram">
-            <div class="mermaid">${diagram.trim()}</div>
+            <div
+                class="mermaid"
+            >${diagram.trim()}</div>
         </div>
     `;
 }
@@ -433,22 +455,34 @@ function hideAllControls() {
 
 
     if (notes) {
-        notes.classList.add("hidden");
+
+        notes.classList.add(
+            "hidden"
+        );
     }
 
 
     if (handwritten) {
-        handwritten.classList.add("hidden");
+
+        handwritten.classList.add(
+            "hidden"
+        );
     }
 
 
     if (customNotes) {
-        customNotes.classList.add("hidden");
+
+        customNotes.classList.add(
+            "hidden"
+        );
     }
 
 
     if (customHandwritten) {
-        customHandwritten.classList.add("hidden");
+
+        customHandwritten.classList.add(
+            "hidden"
+        );
     }
 }
 
@@ -502,7 +536,7 @@ function showHandwrittenControls() {
 
 
 // ==========================================
-// GET PAGE COUNT
+// PAGE COUNT
 // ==========================================
 
 function getPageCount(
@@ -671,7 +705,7 @@ function addPDFButton(
 
 
     button.onclick =
-        function() {
+        function () {
 
             downloadPDF(
                 filename
@@ -694,218 +728,270 @@ function addPDFButton(
 // ==========================================
 // DOWNLOAD PDF
 // ==========================================
+// Uses the browser's native print engine.
+// This avoids html2pdf/html2canvas blank-page problems.
 
-async function downloadPDF(filename) {
-
-    if (
-        typeof html2pdf === "undefined"
-    ) {
-
-        alert(
-            "PDF generator is not loaded. Please refresh the page."
-        );
-
-        return;
-    }
-
+function downloadPDF(filename) {
 
     const answer =
         document.getElementById(
             "answer"
         );
 
-
     if (!answer) {
         return;
     }
 
 
-    const buttonContainer =
-        answer.querySelector(
+    // Open a separate print window
+    const printWindow =
+        window.open(
+            "",
+            "_blank",
+            "width=900,height=700"
+        );
+
+
+    if (!printWindow) {
+
+        alert(
+            "Please allow pop-ups for StudySphere to create the PDF."
+        );
+
+        return;
+    }
+
+
+    // Copy the actual rendered notes
+    const content =
+        answer.cloneNode(true);
+
+
+    // Remove Download PDF button
+    const pdfButton =
+        content.querySelector(
             ".pdf-button-container"
         );
 
 
-    const button =
-        answer.querySelector(
-            ".pdf-button"
-        );
-
-
-    if (button) {
-
-        button.innerText =
-            "⏳ Creating PDF...";
-
-        button.disabled =
-            true;
+    if (pdfButton) {
+        pdfButton.remove();
     }
 
 
-    try {
-
-        // ==================================
-        // HIDE ONLY THE PDF BUTTON
-        // ==================================
-
-        if (buttonContainer) {
-
-            buttonContainer.style.display =
-                "none";
-        }
+    // Copy current CSS
+    let styles = "";
 
 
-        // ==================================
-        // FORCE CONTENT TO BE VISIBLE
-        // ==================================
+    document
+        .querySelectorAll(
+            'link[rel="stylesheet"], style'
+        )
+        .forEach(
+            function(element) {
 
-        answer.style.display =
-            "block";
+                if (
+                    element.tagName
+                        .toLowerCase() ===
+                    "link"
+                ) {
 
-        answer.style.visibility =
-            "visible";
+                    styles += `
+                        <link
+                            rel="stylesheet"
+                            href="${element.href}"
+                        >
+                    `;
 
-        answer.style.opacity =
-            "1";
+                } else {
 
-
-        // ==================================
-        // WAIT FOR RENDERING
-        // ==================================
-
-        await new Promise(
-            function(resolve) {
-
-                requestAnimationFrame(
-                    function() {
-
-                        requestAnimationFrame(
-                            function() {
-
-                                setTimeout(
-                                    resolve,
-                                    500
-                                );
-
-                            }
-                        );
-
-                    }
-                );
+                    styles += `
+                        <style>
+                            ${element.innerHTML}
+                        </style>
+                    `;
+                }
 
             }
         );
 
 
-        // ==================================
-        // PDF OPTIONS
-        // ==================================
+    // PDF-specific styling
+    styles += `
 
-        const options = {
+        <style>
 
-            margin: 10,
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
 
-            filename: filename,
 
-            image: {
+            html,
+            body {
 
-                type: "jpeg",
+                margin: 0;
+                padding: 0;
 
-                quality: 0.98
-
-            },
-
-            html2canvas: {
-
-                scale: 2,
-
-                useCORS: true,
-
-                allowTaint: true,
-
-                backgroundColor:
-                    "#ffffff",
-
-                logging: true,
-
-                scrollX: 0,
-
-                scrollY: 0
-
-            },
-
-            jsPDF: {
-
-                unit: "mm",
-
-                format: "a4",
-
-                orientation:
-                    "portrait",
-
-                compress: true
-
-            },
-
-            pagebreak: {
-
-                mode: [
-                    "css",
-                    "legacy"
-                ],
-
-                before: ".pdf-page"
+                background: white !important;
 
             }
 
-        };
+
+            body {
+
+                font-family:
+                    Arial,
+                    sans-serif;
+
+            }
 
 
-        // ==================================
-        // CAPTURE ACTUAL ANSWER
-        // ==================================
+            #answer {
 
-        await html2pdf()
-            .set(options)
-            .from(answer)
-            .save();
+                width: 100% !important;
 
+                margin: 0 !important;
 
-    } catch (error) {
+                padding: 0 !important;
 
-        console.error(
-            "StudySphere PDF Error:",
-            error
-        );
+            }
 
 
-        alert(
-            "Unable to create PDF. Please try again."
-        );
+            .normal-note-page,
+            .handwritten-note {
+
+                width: 100% !important;
+
+                max-width: none !important;
+
+                margin: 0 !important;
+
+                box-sizing: border-box;
+
+                box-shadow: none !important;
+
+                animation: none !important;
+
+                transform: none !important;
+
+                page-break-after: always;
+
+                break-after: page;
+
+                page-break-inside: avoid;
+
+                break-inside: avoid;
+
+            }
 
 
-    } finally {
+            .normal-note-page:last-child,
+            .handwritten-note:last-child {
 
-        // ==================================
-        // SHOW PDF BUTTON AGAIN
-        // ==================================
+                page-break-after: auto;
 
-        if (buttonContainer) {
+                break-after: auto;
 
-            buttonContainer.style.display =
-                "";
-        }
+            }
 
 
-        if (button) {
+            .note-diagram {
 
-            button.innerText =
-                "📄 Download PDF";
+                width: 100% !important;
 
-            button.disabled =
-                false;
-        }
-    }
+                overflow: visible !important;
+
+                page-break-inside: avoid;
+
+                break-inside: avoid;
+
+            }
+
+
+            .note-diagram svg {
+
+                max-width: 100% !important;
+
+                height: auto !important;
+
+            }
+
+
+            h1,
+            h2,
+            h3 {
+
+                page-break-after: avoid;
+
+                break-after: avoid;
+
+            }
+
+        </style>
+
+    `;
+
+
+    // Write actual content into print window
+    printWindow.document.open();
+
+
+    printWindow.document.write(`
+
+        <!DOCTYPE html>
+
+        <html>
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                ${filename.replace(".pdf", "")}
+            </title>
+
+            ${styles}
+
+        </head>
+
+
+        <body>
+
+            ${content.outerHTML}
+
+        </body>
+
+        </html>
+
+    `);
+
+
+    printWindow.document.close();
+
+
+    // Give browser time to load CSS/fonts/content
+    setTimeout(
+        function() {
+
+            printWindow.focus();
+
+            printWindow.print();
+
+
+            // Close print window after dialog
+            setTimeout(
+                function() {
+
+                    printWindow.close();
+
+                },
+                1500
+            );
+
+        },
+        1200
+    );
 }
 
 
@@ -916,24 +1002,18 @@ async function downloadPDF(filename) {
 async function askAI() {
 
     hideAllControls();
-
     removePDFButton();
-
 
     const question =
         document
-            .getElementById(
-                "question"
-            )
+            .getElementById("question")
             .value
             .trim();
-
 
     const answer =
         document.getElementById(
             "answer"
         );
-
 
     if (!question) {
 
@@ -954,14 +1034,11 @@ async function askAI() {
             await fetch(
                 "https://ai-study-assistant.anshikasaxena50.workers.dev",
                 {
-
                     method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body: JSON.stringify({
@@ -970,7 +1047,6 @@ async function askAI() {
                             question
 
                     })
-
                 }
             );
 
@@ -1006,13 +1082,11 @@ async function askAI() {
 
     } catch (error) {
 
-        console.error(
-            error
-        );
-
+        console.error(error);
 
         answer.innerText =
             "Unable to connect to AI. Please try again.";
+
     }
 }
 
@@ -1024,15 +1098,12 @@ async function askAI() {
 async function makeNotes() {
 
     showNotesControls();
-
     removePDFButton();
 
 
     const question =
         document
-            .getElementById(
-                "question"
-            )
+            .getElementById("question")
             .value
             .trim();
 
@@ -1076,14 +1147,11 @@ async function makeNotes() {
             await fetch(
                 "https://ai-study-assistant.anshikasaxena50.workers.dev",
                 {
-
                     method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body: JSON.stringify({
@@ -1119,7 +1187,6 @@ Rules:
 - Do not mention these instructions.`
 
                     })
-
                 }
             );
 
@@ -1163,10 +1230,7 @@ Rules:
 
 
         pages.forEach(
-            function(
-                content,
-                index
-            ) {
+            function(content, index) {
 
                 html += `
 
@@ -1183,14 +1247,17 @@ Rules:
                         <div
                             class="note-content"
                         >
+
                             ${formatAnswer(
                                 content
                             )}
+
                         </div>
 
                     </div>
 
                 `;
+
             }
         );
 
@@ -1199,10 +1266,7 @@ Rules:
             html;
 
 
-        // ==================================
-        // DIAGRAM
-        // ==================================
-
+        // Create diagram separately
         if (
             diagramChoice === "yes"
         ) {
@@ -1261,17 +1325,13 @@ Rules:
 
 
             await renderDiagrams();
+
         }
 
-
-        // ==================================
-        // PDF BUTTON
-        // ==================================
 
         addPDFButton(
             "StudySphere-Notes.pdf"
         );
-
 
     } catch (error) {
 
@@ -1283,6 +1343,7 @@ Rules:
 
         answer.innerText =
             "Unable to create notes. Please try again.";
+
     }
 }
 
@@ -1294,15 +1355,12 @@ Rules:
 async function handwrittenNotes() {
 
     showHandwrittenControls();
-
     removePDFButton();
 
 
     const question =
         document
-            .getElementById(
-                "question"
-            )
+            .getElementById("question")
             .value
             .trim();
 
@@ -1363,14 +1421,11 @@ async function handwrittenNotes() {
             await fetch(
                 "https://ai-study-assistant.anshikasaxena50.workers.dev",
                 {
-
                     method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body: JSON.stringify({
@@ -1406,7 +1461,6 @@ Rules:
 8. Do not mention these instructions.`
 
                     })
-
                 }
             );
 
@@ -1450,10 +1504,7 @@ Rules:
 
 
         pages.forEach(
-            function(
-                content,
-                index
-            ) {
+            function(content, index) {
 
                 html += `
 
@@ -1485,6 +1536,7 @@ Rules:
                     </div>
 
                 `;
+
             }
         );
 
@@ -1493,10 +1545,7 @@ Rules:
             html;
 
 
-        // ==================================
-        // DIAGRAM
-        // ==================================
-
+        // Create diagram separately
         if (
             diagramChoice === "yes"
         ) {
@@ -1508,10 +1557,12 @@ Rules:
 
 
             diagramArea.className = `
+
                 handwritten-note
                 pdf-page
                 background-${background}
                 font-${font}
+
             `;
 
 
@@ -1559,17 +1610,13 @@ Rules:
 
 
             await renderDiagrams();
+
         }
 
-
-        // ==================================
-        // PDF BUTTON
-        // ==================================
 
         addPDFButton(
             "StudySphere-Handwritten-Notes.pdf"
         );
-
 
     } catch (error) {
 
@@ -1581,6 +1628,7 @@ Rules:
 
         answer.innerText =
             "Unable to create handwritten notes. Please try again.";
+
     }
 }
 
@@ -1596,10 +1644,7 @@ document.addEventListener(
         hideAllControls();
 
 
-        // ==================================
-        // NOTES CUSTOM PAGE CONTROL
-        // ==================================
-
+        // Notes custom pages
         const notesPageNumber =
             document.getElementById(
                 "notesPageNumber"
@@ -1622,8 +1667,7 @@ document.addEventListener(
                 function() {
 
                     if (
-                        this.value ===
-                        "custom"
+                        this.value === "custom"
                     ) {
 
                         customNotesPages
@@ -1639,17 +1683,16 @@ document.addEventListener(
                             .add(
                                 "hidden"
                             );
+
                     }
 
                 }
             );
+
         }
 
 
-        // ==================================
-        // HANDWRITTEN CUSTOM PAGE CONTROL
-        // ==================================
-
+        // Handwritten custom pages
         const handwrittenPageNumber =
             document.getElementById(
                 "handwrittenPageNumber"
@@ -1689,10 +1732,12 @@ document.addEventListener(
                             .add(
                                 "hidden"
                             );
+
                     }
 
                 }
             );
+
         }
 
     }
