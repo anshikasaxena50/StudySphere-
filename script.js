@@ -1,4 +1,3 @@
-````javascript
 function formatAnswer(text) {
 
     if (!text) {
@@ -1729,4 +1728,3 @@ document.addEventListener(
 
     }
 );
-````
