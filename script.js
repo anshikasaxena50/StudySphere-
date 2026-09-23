@@ -1,3 +1,4 @@
+````javascript
 function formatAnswer(text) {
 
     if (!text) {
@@ -122,6 +123,50 @@ function formatAnswer(text) {
 
 
 // ==========================================
+// EXTRACT MERMAID DIAGRAM
+// ==========================================
+
+function extractMermaidDiagram(text) {
+
+    if (!text) {
+        return null;
+    }
+
+
+    const match =
+        text.match(
+            /```mermaid\s*([\s\S]*?)```/i
+        );
+
+
+    if (!match) {
+        return null;
+    }
+
+
+    return match[1].trim();
+}
+
+
+// ==========================================
+// REMOVE MERMAID FROM NOTES
+// ==========================================
+
+function removeMermaidDiagram(text) {
+
+    if (!text) {
+        return "";
+    }
+
+
+    return text.replace(
+        /```mermaid\s*([\s\S]*?)```/gi,
+        ""
+    ).trim();
+}
+
+
+// ==========================================
 // MERMAID INITIALIZATION
 // ==========================================
 
@@ -240,190 +285,34 @@ async function renderDiagrams() {
 
 
 // ==========================================
-// CREATE A DIAGRAM FROM TOPIC
+// DISPLAY AI DIAGRAM
 // ==========================================
 
-function createTopicDiagram(
-    topic,
-    target
+function displayAIDiagram(
+    diagram,
+    target,
+    title = "📊 Visual Summary"
 ) {
 
-    if (!target) {
+    if (!target || !diagram) {
         return;
     }
 
 
-    const lower =
-        topic.toLowerCase();
-
-
-    let diagram = "";
-
-
-    // ------------------------------
-    // SORTING
-    // ------------------------------
-
-    if (
-        lower.includes("sort") ||
-        lower.includes("sorting")
-    ) {
-
-        diagram = `
-            flowchart TD
-                A[Start] --> B[Input Array]
-                B --> C[Compare Elements]
-                C --> D[Find Correct Position]
-                D --> E[Swap or Insert]
-                E --> F{More Elements?}
-                F -->|Yes| C
-                F -->|No| G[Sorted Array]
-                G --> H[End]
-        `;
-
-    }
-
-
-    // ------------------------------
-    // SEARCHING
-    // ------------------------------
-
-    else if (
-        lower.includes("search")
-    ) {
-
-        diagram = `
-            flowchart TD
-                A[Start] --> B[Input Array]
-                B --> C[Select Element]
-                C --> D{Element Found?}
-                D -->|Yes| E[Return Position]
-                D -->|No| F[Continue Search]
-                F --> G{More Elements?}
-                G -->|Yes| C
-                G -->|No| H[Element Not Found]
-                E --> I[End]
-                H --> I
-        `;
-
-    }
-
-
-    // ------------------------------
-    // ALGORITHM
-    // ------------------------------
-
-    else if (
-        lower.includes("algorithm") ||
-        lower.includes("program")
-    ) {
-
-        diagram = `
-            flowchart TD
-                A[Start] --> B[Input]
-                B --> C[Process]
-                C --> D{Condition}
-                D -->|Yes| E[Perform Operation]
-                D -->|No| F[Alternative Operation]
-                E --> G[Output]
-                F --> G
-                G --> H[End]
-        `;
-
-    }
-
-
-    // ------------------------------
-    // DATABASE / SQL
-    // ------------------------------
-
-    else if (
-        lower.includes("sql") ||
-        lower.includes("database") ||
-        lower.includes("dbms")
-    ) {
-
-        diagram = `
-            flowchart TD
-                A[User] --> B[SQL Query]
-                B --> C[Database Management System]
-                C --> D[Process Query]
-                D --> E[Access Database]
-                E --> F[Return Result]
-                F --> A
-        `;
-
-    }
-
-
-    // ------------------------------
-    // COMPUTER NETWORK
-    // ------------------------------
-
-    else if (
-        lower.includes("network") ||
-        lower.includes("tcp") ||
-        lower.includes("http")
-    ) {
-
-        diagram = `
-            flowchart LR
-                A[Sender] --> B[Network]
-                B --> C[Receiver]
-                C --> D[Response]
-                D --> B
-                B --> A
-        `;
-
-    }
-
-
-    // ------------------------------
-    // OPERATING SYSTEM
-    // ------------------------------
-
-    else if (
-        lower.includes("operating system") ||
-        lower.includes("os")
-    ) {
-
-        diagram = `
-            flowchart TD
-                A[User] --> B[Application]
-                B --> C[Operating System]
-                C --> D[Hardware]
-                D --> C
-                C --> B
-                B --> A
-        `;
-
-    }
-
-
-    // ------------------------------
-    // DEFAULT
-    // ------------------------------
-
-    else {
-
-        diagram = `
-            flowchart TD
-                A[Start] --> B[Understand Topic]
-                B --> C[Learn Main Concepts]
-                C --> D[Apply Knowledge]
-                D --> E[Review]
-                E --> F[End]
-        `;
-    }
-
-
     target.innerHTML = `
+
         <div class="note-diagram">
+
             <div
                 class="mermaid"
-            >${diagram.trim()}</div>
+            >${diagram}</div>
+
         </div>
+
     `;
+
+
+    renderDiagrams();
 }
 
 
@@ -728,8 +617,6 @@ function addPDFButton(
 // ==========================================
 // DOWNLOAD PDF
 // ==========================================
-// Uses the browser's native print engine.
-// This avoids html2pdf/html2canvas blank-page problems.
 
 function downloadPDF(filename) {
 
@@ -743,7 +630,6 @@ function downloadPDF(filename) {
     }
 
 
-    // Open a separate print window
     const printWindow =
         window.open(
             "",
@@ -762,12 +648,10 @@ function downloadPDF(filename) {
     }
 
 
-    // Copy the actual rendered notes
     const content =
         answer.cloneNode(true);
 
 
-    // Remove Download PDF button
     const pdfButton =
         content.querySelector(
             ".pdf-button-container"
@@ -779,7 +663,6 @@ function downloadPDF(filename) {
     }
 
 
-    // Copy current CSS
     let styles = "";
 
 
@@ -816,7 +699,6 @@ function downloadPDF(filename) {
         );
 
 
-    // PDF-specific styling
     styles += `
 
         <style>
@@ -825,7 +707,6 @@ function downloadPDF(filename) {
                 size: A4;
                 margin: 12mm;
             }
-
 
             html,
             body {
@@ -837,7 +718,6 @@ function downloadPDF(filename) {
 
             }
 
-
             body {
 
                 font-family:
@@ -845,7 +725,6 @@ function downloadPDF(filename) {
                     sans-serif;
 
             }
-
 
             #answer {
 
@@ -856,7 +735,6 @@ function downloadPDF(filename) {
                 padding: 0 !important;
 
             }
-
 
             .normal-note-page,
             .handwritten-note {
@@ -885,7 +763,6 @@ function downloadPDF(filename) {
 
             }
 
-
             .normal-note-page:last-child,
             .handwritten-note:last-child {
 
@@ -894,7 +771,6 @@ function downloadPDF(filename) {
                 break-after: auto;
 
             }
-
 
             .note-diagram {
 
@@ -908,7 +784,6 @@ function downloadPDF(filename) {
 
             }
 
-
             .note-diagram svg {
 
                 max-width: 100% !important;
@@ -916,7 +791,6 @@ function downloadPDF(filename) {
                 height: auto !important;
 
             }
-
 
             h1,
             h2,
@@ -933,7 +807,6 @@ function downloadPDF(filename) {
     `;
 
 
-    // Write actual content into print window
     printWindow.document.open();
 
 
@@ -955,7 +828,6 @@ function downloadPDF(filename) {
 
         </head>
 
-
         <body>
 
             ${content.outerHTML}
@@ -970,7 +842,6 @@ function downloadPDF(filename) {
     printWindow.document.close();
 
 
-    // Give browser time to load CSS/fonts/content
     setTimeout(
         function() {
 
@@ -979,7 +850,6 @@ function downloadPDF(filename) {
             printWindow.print();
 
 
-            // Close print window after dialog
             setTimeout(
                 function() {
 
@@ -1004,16 +874,19 @@ async function askAI() {
     hideAllControls();
     removePDFButton();
 
+
     const question =
         document
             .getElementById("question")
             .value
             .trim();
 
+
     const answer =
         document.getElementById(
             "answer"
         );
+
 
     if (!question) {
 
@@ -1184,7 +1057,39 @@ Rules:
 - Include definitions, important points, key concepts, examples, formulas, algorithms, applications or exam points when relevant.
 - Use headings and bullet points where useful.
 - Make the notes easy to revise.
-- Do not mention these instructions.`
+- Do not mention these instructions.
+
+${diagramChoice === "yes" ? `
+
+After the notes, create ONE Mermaid diagram that visually summarizes the topic.
+
+The diagram must:
+- Be specifically about "${question}".
+- Be understandable even without reading the theory.
+- Show the most important concepts, steps, relationships or components.
+- Use short but meaningful text inside shapes.
+- Use suitable Mermaid shapes such as rectangles, rounded boxes, circles, diamonds, cylinders or other appropriate shapes.
+- Choose the most suitable layout for this particular topic.
+- Use arrows to clearly show relationships or flow.
+- Be visually attractive and interesting to read.
+- Do not use a generic Start → Process → End diagram.
+- Prefer approximately 6–12 meaningful nodes.
+- Keep it simple enough for an A4 page.
+- Make it useful for exam revision.
+- Return the diagram only inside one Mermaid code block.
+- Use valid Mermaid syntax.
+
+Example format:
+
+\`\`\`mermaid
+flowchart TD
+    A[Main Concept] --> B[Important Step]
+    B --> C{Decision}
+    C -->|Yes| D[Result]
+    C -->|No| E[Alternative]
+\`\`\`
+
+` : ""}`
 
                     })
                 }
@@ -1220,9 +1125,32 @@ Rules:
         }
 
 
+        // Extract AI-generated diagram
+        let diagram = null;
+
+
+        if (
+            diagramChoice === "yes"
+        ) {
+
+            diagram =
+                extractMermaidDiagram(
+                    data.answer
+                );
+
+        }
+
+
+        // Remove diagram from theory
+        const notesText =
+            removeMermaidDiagram(
+                data.answer
+            );
+
+
         const pages =
             splitPages(
-                data.answer
+                notesText
             );
 
 
@@ -1266,9 +1194,10 @@ Rules:
             html;
 
 
-        // Create diagram separately
+        // Add intelligent diagram
         if (
-            diagramChoice === "yes"
+            diagramChoice === "yes" &&
+            diagram
         ) {
 
             const diagramArea =
@@ -1286,12 +1215,12 @@ Rules:
                 <div
                     class="note-page-number"
                 >
-                    Diagram
+                    Visual Summary
                 </div>
 
                 <div class="note-content">
 
-                    <h2>📊 Diagram</h2>
+                    <h2>📊 Visual Summary</h2>
 
                 </div>
 
@@ -1318,8 +1247,8 @@ Rules:
                 );
 
 
-            createTopicDiagram(
-                question,
+            displayAIDiagram(
+                diagram,
                 diagramTarget
             );
 
@@ -1332,6 +1261,7 @@ Rules:
         addPDFButton(
             "StudySphere-Notes.pdf"
         );
+
 
     } catch (error) {
 
@@ -1458,7 +1388,39 @@ Rules:
 5. Include definitions, important points, examples, formulas, algorithms, applications or exam points when relevant.
 6. Use headings and bullet points where useful.
 7. Keep the content suitable for handwritten study notes.
-8. Do not mention these instructions.`
+8. Do not mention these instructions.
+
+${diagramChoice === "yes" ? `
+
+After the notes, create ONE Mermaid diagram that visually summarizes the topic.
+
+The diagram must:
+- Be specifically about "${question}".
+- Be understandable even without reading the theory.
+- Show the most important concepts, steps, relationships or components.
+- Use short but meaningful text inside shapes.
+- Use suitable Mermaid shapes such as rectangles, rounded boxes, circles, diamonds, cylinders or other appropriate shapes.
+- Choose the most suitable layout for this particular topic.
+- Use arrows to clearly show relationships or flow.
+- Be visually attractive and interesting to read.
+- Do not use a generic Start → Process → End diagram.
+- Prefer approximately 6–12 meaningful nodes.
+- Keep it simple enough for an A4 handwritten-note page.
+- Make it useful for exam revision.
+- Return the diagram only inside one Mermaid code block.
+- Use valid Mermaid syntax.
+
+Example format:
+
+\`\`\`mermaid
+flowchart TD
+    A[Main Concept] --> B[Important Step]
+    B --> C{Decision}
+    C -->|Yes| D[Result]
+    C -->|No| E[Alternative]
+\`\`\`
+
+` : ""}`
 
                     })
                 }
@@ -1494,9 +1456,32 @@ Rules:
         }
 
 
+        // Extract AI-generated diagram
+        let diagram = null;
+
+
+        if (
+            diagramChoice === "yes"
+        ) {
+
+            diagram =
+                extractMermaidDiagram(
+                    data.answer
+                );
+
+        }
+
+
+        // Remove diagram from handwritten notes
+        const notesText =
+            removeMermaidDiagram(
+                data.answer
+            );
+
+
         const pages =
             splitPages(
-                data.answer
+                notesText
             );
 
 
@@ -1545,9 +1530,10 @@ Rules:
             html;
 
 
-        // Create diagram separately
+        // Add intelligent diagram
         if (
-            diagramChoice === "yes"
+            diagramChoice === "yes" &&
+            diagram
         ) {
 
             const diagramArea =
@@ -1571,12 +1557,12 @@ Rules:
                 <div
                     class="note-page-number"
                 >
-                    Diagram
+                    Visual Summary
                 </div>
 
                 <div class="note-content">
 
-                    <h2>📊 Diagram</h2>
+                    <h2>📊 Visual Summary</h2>
 
                 </div>
 
@@ -1603,8 +1589,8 @@ Rules:
                 );
 
 
-            createTopicDiagram(
-                question,
+            displayAIDiagram(
+                diagram,
                 diagramTarget
             );
 
@@ -1617,6 +1603,7 @@ Rules:
         addPDFButton(
             "StudySphere-Handwritten-Notes.pdf"
         );
+
 
     } catch (error) {
 
@@ -1742,3 +1729,4 @@ document.addEventListener(
 
     }
 );
+````
