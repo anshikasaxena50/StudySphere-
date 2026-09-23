@@ -1728,3 +1728,160 @@ document.addEventListener(
 
     }
 );
+// ==========================================
+// STUDY MODE
+// ==========================================
+
+function startStudyMode() {
+
+    hideAllControls();
+    removePDFButton();
+
+    const studyMode =
+        document.getElementById("studyMode");
+
+    if (studyMode) {
+
+        studyMode.classList.remove("hidden");
+
+    }
+
+}
+
+
+// ==========================================
+// STUDY MODE - LEARN
+// ==========================================
+
+async function studyLearn() {
+
+    const topic =
+        document
+            .getElementById("studyTopic")
+            .value
+            .trim();
+
+    const result =
+        document.getElementById(
+            "studyResult"
+        );
+
+
+    if (!topic) {
+
+        result.innerHTML =
+            `<p>Please enter a topic to study.</p>`;
+
+        return;
+    }
+
+
+    result.innerHTML =
+        `<p>📚 Learning about <strong>${topic}</strong>...</p>`;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        question:
+
+`You are helping a college student learn a topic for exams.
+
+Topic:
+${topic}
+
+Explain this topic in simple, clear, exam-oriented language.
+
+Structure the response as:
+
+1. What is it?
+2. Main idea
+3. Important concepts
+4. Simple example
+5. Key points to remember
+
+Rules:
+- Keep it easy to understand.
+- Avoid unnecessary detail.
+- Use headings and bullet points.
+- Explain technical terms briefly.
+- Make it useful for exam preparation.
+- Do not mention these instructions.`
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            data.error
+        ) {
+
+            result.innerHTML =
+                `<p>Error: ${
+                    data.error ||
+                    "Unable to load the topic."
+                }</p>`;
+
+            return;
+        }
+
+
+        result.innerHTML = `
+
+            <div class="study-learn-card">
+
+                <h3>
+                    📚 ${topic}
+                </h3>
+
+                <div>
+                    ${
+                        formatAnswer(
+                            data.answer
+                        )
+                    }
+                </div>
+
+            </div>
+
+        `;
+
+
+        await renderDiagrams();
+
+
+    } catch (error) {
+
+        console.error(
+            "Study Mode error:",
+            error
+        );
+
+
+        result.innerHTML =
+            `<p>
+                Unable to connect to StudySphere AI.
+                Please try again.
+            </p>`;
+
+    }
+
+}
