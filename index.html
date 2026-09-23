@@ -21,9 +21,12 @@
         placeholder="Ask a study question..."
     >
 <div class="study-mode-section">
-    <button class="study-mode-button" onclick="startStudyMode()">
-        🎯 Study Mode
-    </button>
+    <button
+    class="study-mode-button"
+    onclick="document.getElementById('studyMode').classList.remove('hidden')"
+>
+    🎯 Study Mode
+</button>
 </div>
     <div id="studyMode" class="study-mode hidden">
 
