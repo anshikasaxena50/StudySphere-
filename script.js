@@ -1885,3 +1885,317 @@ Rules:
     }
 
 }
+// ==========================================
+// STUDY MODE - PRACTICE
+// ==========================================
+
+async function startPractice() {
+
+    const topic =
+        document
+            .getElementById("studyTopic")
+            .value
+            .trim();
+
+    const practiceSection =
+        document.getElementById(
+            "practiceSection"
+        );
+
+    const practiceContent =
+        document.getElementById(
+            "practiceContent"
+        );
+
+
+    if (!topic) {
+
+        practiceContent.innerHTML =
+            "<p>Please enter a topic first.</p>";
+
+        return;
+    }
+
+
+    practiceSection.classList.remove(
+        "hidden"
+    );
+
+
+    practiceContent.innerHTML =
+        "<p>🧠 Creating practice questions...</p>";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        question:
+
+`Create 5 short-answer practice questions for a college student studying:
+
+${topic}
+
+Rules:
+- Questions must test understanding, not memorization only.
+- Start from basic and gradually become slightly more difficult.
+- Do not give the answers.
+- Keep each question short.
+- Number them 1 to 5.
+- Return only the questions.`
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            data.error
+        ) {
+
+            practiceContent.innerHTML =
+                `<p>Error: ${
+                    data.error ||
+                    "Unable to create practice questions."
+                }</p>`;
+
+            return;
+        }
+
+
+        const questions =
+            data.answer
+                .split("\n")
+                .filter(
+                    line =>
+                        line.trim() !== ""
+                );
+
+
+        let html = "";
+
+
+        questions.forEach(
+            function(question, index) {
+
+                const cleanQuestion =
+                    question
+                        .replace(
+                            /^\s*\d+[\.\)]\s*/,
+                            ""
+                        )
+                        .trim();
+
+
+                if (!cleanQuestion) {
+                    return;
+                }
+
+
+                html += `
+
+                    <div
+                        class="practice-question"
+                    >
+
+                        <h4>
+                            Question ${
+                                index + 1
+                            }
+                        </h4>
+
+                        <p>
+                            ${cleanQuestion}
+                        </p>
+
+                        <textarea
+                            class="practice-answer"
+                            id="practiceAnswer${index}"
+                            placeholder="Write your answer here..."
+                        ></textarea>
+
+                        <button
+                            class="practice-check-button"
+                            onclick="checkPracticeAnswer(
+                                ${index},
+                                \`${cleanQuestion.replace(/`/g, "\\`")}\`
+                            )"
+                        >
+                            Check Answer
+                        </button>
+
+                        <div
+                            id="practiceFeedback${index}"
+                            class="practice-feedback"
+                        ></div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        practiceContent.innerHTML =
+            html;
+
+
+    } catch (error) {
+
+        console.error(
+            "Practice error:",
+            error
+        );
+
+
+        practiceContent.innerHTML =
+            `<p>
+                Unable to connect to StudySphere AI.
+                Please try again.
+            </p>`;
+
+    }
+}
+
+
+// ==========================================
+// CHECK PRACTICE ANSWER
+// ==========================================
+
+async function checkPracticeAnswer(
+    index,
+    question
+) {
+
+    const answer =
+        document
+            .getElementById(
+                `practiceAnswer${index}`
+            )
+            .value
+            .trim();
+
+
+    const feedback =
+        document.getElementById(
+            `practiceFeedback${index}`
+        );
+
+
+    if (!answer) {
+
+        feedback.innerHTML =
+            "Please write an answer first.";
+
+        return;
+    }
+
+
+    feedback.innerHTML =
+        "🔍 Checking your answer...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        question:
+
+`Check this student's answer.
+
+Question:
+${question}
+
+Student's answer:
+${answer}
+
+Evaluate the answer for a college exam.
+
+Return:
+
+Result: Correct / Partially Correct / Needs Improvement
+
+Explanation:
+Give a short explanation of what was correct or missing.
+
+Correct points:
+List the important points that should be included.
+
+Rules:
+- Be fair.
+- Do not require exact wording.
+- Give partial credit when the main idea is correct.
+- Keep the feedback concise.`
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            data.error
+        ) {
+
+            feedback.innerHTML =
+                `Error: ${
+                    data.error ||
+                    "Unable to check answer."
+                }`;
+
+            return;
+        }
+
+
+        feedback.innerHTML =
+            formatAnswer(
+                data.answer
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            "Answer checking error:",
+            error
+        );
+
+
+        feedback.innerHTML =
+            "Unable to check the answer. Please try again.";
+
+    }
+
+}
