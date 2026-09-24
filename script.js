@@ -1,162 +1,252 @@
+/* =========================================================
+   STUDYSPHERE
+   Complete JavaScript
+========================================================= */
+
+
+/* =========================================================
+   API
+========================================================= */
+
+const API_URL =
+    "https://ai-study-assistant.anshikasaxena50.workers.dev";
+
+
+/* =========================================================
+   MERMAID
+========================================================= */
+
+if (typeof mermaid !== "undefined") {
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose"
+    });
+
+}
+
+
+/* =========================================================
+   FORMAT ANSWER
+========================================================= */
+
 function formatAnswer(text) {
 
     if (!text) {
         return "";
     }
 
-    // Temporarily protect Mermaid blocks
-    const diagrams = [];
+    let safeText =
+        String(text);
 
-    text = text.replace(
-        /```mermaid\s*([\s\S]*?)```/gi,
-        function (match, diagram) {
+    /*
+        Protect Mermaid blocks
+    */
 
-            const id = diagrams.length;
+    const mermaidBlocks = [];
 
-            diagrams.push(
-                diagram.trim()
-            );
+    safeText =
+        safeText.replace(
+            /```mermaid\s*([\s\S]*?)```/gi,
+            function(match, code) {
 
-            return `___DIAGRAM_${id}___`;
-        }
-    );
+                const index =
+                    mermaidBlocks.length;
 
+                mermaidBlocks.push(
+                    code.trim()
+                );
 
-    // Escape HTML
-    text = text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-
-
-    // Bold + italic
-    text = text.replace(
-        /\*\*\*(.*?)\*\*\*/g,
-        "<strong><em>$1</em></strong>"
-    );
-
-    text = text.replace(
-        /\*\*(.*?)\*\*/g,
-        "<strong>$1</strong>"
-    );
-
-    text = text.replace(
-        /\*(.*?)\*/g,
-        "<em>$1</em>"
-    );
+                return (
+                    "___MERMAID_BLOCK_" +
+                    index +
+                    "___"
+                );
+            }
+        );
 
 
-    // Headings
-    text = text.replace(
-        /^### (.*)$/gm,
-        "<h3>$1</h3>"
-    );
+    /*
+        Escape HTML
+    */
 
-    text = text.replace(
-        /^## (.*)$/gm,
-        "<h2>$1</h2>"
-    );
-
-    text = text.replace(
-        /^# (.*)$/gm,
-        "<h1>$1</h1>"
-    );
+    safeText =
+        safeText
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
 
 
-    // Horizontal line
-    text = text.replace(
-        /^---$/gm,
-        "<hr>"
-    );
+    /*
+        Headings
+    */
+
+    safeText =
+        safeText.replace(
+            /^### (.*)$/gm,
+            "<h4>$1</h4>"
+        );
+
+    safeText =
+        safeText.replace(
+            /^## (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+    safeText =
+        safeText.replace(
+            /^# (.*)$/gm,
+            "<h2>$1</h2>"
+        );
 
 
-    // Numbered list
-    text = text.replace(
-        /^\d+\.\s+(.*)$/gm,
-        "<div class='list-item'>• $1</div>"
-    );
+    /*
+        Bold
+    */
+
+    safeText =
+        safeText.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
 
 
-    // Bullet list
-    text = text.replace(
-        /^\*\s+(.*)$/gm,
-        "<div class='list-item'>• $1</div>"
-    );
+    /*
+        Inline code
+    */
+
+    safeText =
+        safeText.replace(
+            /`([^`]+)`/g,
+            "<code>$1</code>"
+        );
 
 
-    // New lines
-    text = text.replace(
-        /\n\n/g,
-        "<br><br>"
-    );
+    /*
+        Bullet points
+    */
 
-    text = text.replace(
-        /\n/g,
-        "<br>"
-    );
+    safeText =
+        safeText.replace(
+            /^\s*[-*]\s+(.*)$/gm,
+            "<li>$1</li>"
+        );
 
 
-    // Restore Mermaid blocks
-    diagrams.forEach(
-        function (diagram, index) {
+    safeText =
+        safeText.replace(
+            /(<li>.*<\/li>\s*)+/gs,
+            function(match) {
 
-            const diagramHTML = `
+                return (
+                    "<ul>" +
+                    match +
+                    "</ul>"
+                );
+            }
+        );
+
+
+    /*
+        Numbered lists
+    */
+
+    safeText =
+        safeText.replace(
+            /^\s*\d+\.\s+(.*)$/gm,
+            "<li>$1</li>"
+        );
+
+
+    /*
+        Paragraphs
+    */
+
+    safeText =
+        safeText.replace(
+            /\n{2,}/g,
+            "</p><p>"
+        );
+
+    safeText =
+        safeText.replace(
+            /\n/g,
+            "<br>"
+        );
+
+
+    safeText =
+        "<p>" +
+        safeText +
+        "</p>";
+
+
+    /*
+        Restore Mermaid
+    */
+
+    mermaidBlocks.forEach(
+        function(code, index) {
+
+            const placeholder =
+                "___MERMAID_BLOCK_" +
+                index +
+                "___";
+
+            const diagram =
+                `
                 <div class="note-diagram">
-                    <div
-                        class="mermaid"
-                        data-diagram="${index}"
-                    >${diagram}</div>
+                    <div class="mermaid">
+                        ${code}
+                    </div>
                 </div>
-            `;
+                `;
 
-            text = text.replace(
-                `___DIAGRAM_${index}___`,
-                diagramHTML
-            );
+            safeText =
+                safeText.replace(
+                    placeholder,
+                    diagram
+                );
         }
     );
 
 
-    return text;
+    return safeText;
 }
 
 
-// ==========================================
-// EXTRACT MERMAID DIAGRAM
-// ==========================================
+/* =========================================================
+   EXTRACT MERMAID
+========================================================= */
 
 function extractMermaidDiagram(text) {
 
     if (!text) {
-        return null;
+        return "";
     }
-
 
     const match =
         text.match(
             /```mermaid\s*([\s\S]*?)```/i
         );
 
-
     if (!match) {
-        return null;
+        return "";
     }
-
 
     return match[1].trim();
 }
 
 
-// ==========================================
-// REMOVE MERMAID FROM NOTES
-// ==========================================
+/* =========================================================
+   REMOVE MERMAID
+========================================================= */
 
 function removeMermaidDiagram(text) {
 
     if (!text) {
         return "";
     }
-
 
     return text.replace(
         /```mermaid\s*([\s\S]*?)```/gi,
@@ -165,357 +255,209 @@ function removeMermaidDiagram(text) {
 }
 
 
-// ==========================================
-// MERMAID INITIALIZATION
-// ==========================================
-
-if (
-    typeof mermaid !== "undefined"
-) {
-
-    mermaid.initialize({
-
-        startOnLoad: false,
-
-        securityLevel: "loose",
-
-        theme: "default"
-
-    });
-}
-
-
-// ==========================================
-// RENDER MERMAID
-// ==========================================
+/* =========================================================
+   RENDER DIAGRAMS
+========================================================= */
 
 async function renderDiagrams() {
 
     if (
         typeof mermaid === "undefined"
     ) {
-
-        console.warn(
-            "Mermaid library is not loaded."
-        );
-
         return;
     }
 
+    try {
 
-    const diagrams =
-        document.querySelectorAll(
-            ".mermaid"
+        await mermaid.run({
+            querySelector: ".mermaid"
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Mermaid rendering error:",
+            error
         );
 
-
-    if (!diagrams.length) {
-        return;
-    }
-
-
-    for (
-        let i = 0;
-        i < diagrams.length;
-        i++
-    ) {
-
-        const element =
-            diagrams[i];
-
-
-        if (
-            element.dataset.rendered ===
-            "true"
-        ) {
-            continue;
-        }
-
-
-        const code =
-            element.textContent.trim();
-
-
-        if (!code) {
-            continue;
-        }
-
-
-        try {
-
-            const id =
-                "diagram-" +
-                Date.now() +
-                "-" +
-                i;
-
-
-            const result =
-                await mermaid.render(
-                    id,
-                    code
-                );
-
-
-            element.innerHTML =
-                result.svg;
-
-
-            element.dataset.rendered =
-                "true";
-
-
-        } catch (error) {
-
-            console.error(
-                "Mermaid error:",
-                error
-            );
-
-
-            element.innerHTML = `
-                <div class="diagram-error">
-                    Diagram could not be generated.
-                </div>
-            `;
-        }
     }
 }
 
 
-// ==========================================
-// DISPLAY AI DIAGRAM
-// ==========================================
-
-function displayAIDiagram(
-    diagram,
-    target,
-    title = "📊 Visual Summary"
-) {
-
-    if (!target || !diagram) {
-        return;
-    }
-
-
-    target.innerHTML = `
-
-        <div class="note-diagram">
-
-            <div
-                class="mermaid"
-            >${diagram}</div>
-
-        </div>
-
-    `;
-
-
-    renderDiagrams();
-}
-
-
-// ==========================================
-// HIDE CONTROLS
-// ==========================================
+/* =========================================================
+   CONTROLS
+========================================================= */
 
 function hideAllControls() {
 
-    const notes =
-        document.getElementById(
-            "notesControls"
-        );
+    document
+        .getElementById("notesControls")
+        ?.classList.add("hidden");
 
-    const handwritten =
-        document.getElementById(
-            "handwrittenControls"
-        );
-
-    const customNotes =
-        document.getElementById(
-            "customNotesPages"
-        );
-
-    const customHandwritten =
-        document.getElementById(
-            "customHandwrittenPages"
-        );
-
-
-    if (notes) {
-
-        notes.classList.add(
-            "hidden"
-        );
-    }
-
-
-    if (handwritten) {
-
-        handwritten.classList.add(
-            "hidden"
-        );
-    }
-
-
-    if (customNotes) {
-
-        customNotes.classList.add(
-            "hidden"
-        );
-    }
-
-
-    if (customHandwritten) {
-
-        customHandwritten.classList.add(
-            "hidden"
-        );
-    }
+    document
+        .getElementById("handwrittenControls")
+        ?.classList.add("hidden");
 }
 
-
-// ==========================================
-// SHOW NOTES CONTROLS
-// ==========================================
 
 function showNotesControls() {
 
     hideAllControls();
 
-
-    const controls =
-        document.getElementById(
-            "notesControls"
-        );
-
-
-    if (controls) {
-
-        controls.classList.remove(
-            "hidden"
-        );
-    }
+    document
+        .getElementById("notesControls")
+        ?.classList.remove("hidden");
 }
 
-
-// ==========================================
-// SHOW HANDWRITTEN CONTROLS
-// ==========================================
 
 function showHandwrittenControls() {
 
     hideAllControls();
 
-
-    const controls =
-        document.getElementById(
-            "handwrittenControls"
-        );
-
-
-    if (controls) {
-
-        controls.classList.remove(
-            "hidden"
-        );
-    }
+    document
+        .getElementById("handwrittenControls")
+        ?.classList.remove("hidden");
 }
 
 
-// ==========================================
-// PAGE COUNT
-// ==========================================
+/* =========================================================
+   PAGE COUNT
+========================================================= */
 
-function getPageCount(
-    selectId,
-    customInputId
-) {
+function getPageCount(type) {
 
-    const select =
-        document.getElementById(
-            selectId
-        );
+    let select;
+    let custom;
 
-    const custom =
-        document.getElementById(
-            customInputId
-        );
+    if (type === "notes") {
+
+        select =
+            document.getElementById(
+                "notesPageNumber"
+            );
+
+        custom =
+            document.getElementById(
+                "customNotesPages"
+            );
+
+    } else {
+
+        select =
+            document.getElementById(
+                "handwrittenPageNumber"
+            );
+
+        custom =
+            document.getElementById(
+                "customHandwrittenPages"
+            );
+    }
 
 
-    let count = 1;
+    if (!select) {
+        return 1;
+    }
 
 
-    if (select) {
+    if (select.value === "custom") {
+
+        const number =
+            parseInt(
+                custom.value,
+                10
+            );
 
         if (
-            select.value === "custom"
+            isNaN(number) ||
+            number < 1
         ) {
-
-            count =
-                parseInt(
-                    custom?.value
-                ) || 1;
-
-        } else {
-
-            count =
-                parseInt(
-                    select.value
-                ) || 1;
+            return 1;
         }
+
+        return Math.min(
+            number,
+            20
+        );
     }
 
 
-    return Math.max(
-        1,
-        Math.min(
-            count,
-            10
-        )
-    );
+    return parseInt(
+        select.value,
+        10
+    ) || 1;
 }
 
 
-// ==========================================
-// SPLIT PAGES
-// ==========================================
+/* =========================================================
+   SPLIT PAGES
+========================================================= */
 
-function splitPages(text) {
+function splitPages(text, pageCount) {
 
-    const regex =
-        /PAGE\s*\d+\s*([\s\S]*?)(?=PAGE\s*\d+|$)/gi;
-
-
-    const pages = [];
-
-    let match;
-
-
-    while (
-        (match =
-            regex.exec(text)) !== null
-    ) {
-
-        const content =
-            match[1].trim();
-
-
-        if (content) {
-
-            pages.push(
-                content
-            );
-        }
+    if (!text) {
+        return [];
     }
+
+    const cleanText =
+        text.trim();
+
+
+    /*
+        Try explicit PAGE markers first
+    */
+
+    const explicitPages =
+        cleanText.split(
+            /\n\s*PAGE\s+\d+\s*\n/gi
+        );
 
 
     if (
-        pages.length === 0
+        explicitPages.length > 1
+    ) {
+
+        return explicitPages
+            .map(
+                page =>
+                    page.trim()
+            )
+            .filter(Boolean)
+            .slice(
+                0,
+                pageCount
+            );
+    }
+
+
+    /*
+        Otherwise split naturally
+    */
+
+    const words =
+        cleanText.split(/\s+/);
+
+    const wordsPerPage =
+        Math.ceil(
+            words.length /
+            pageCount
+        );
+
+    const pages = [];
+
+    for (
+        let i = 0;
+        i < words.length;
+        i += wordsPerPage
     ) {
 
         pages.push(
-            text.trim()
+            words
+                .slice(
+                    i,
+                    i + wordsPerPage
+                )
+                .join(" ")
         );
     }
 
@@ -524,82 +466,45 @@ function splitPages(text) {
 }
 
 
-// ==========================================
-// REMOVE PDF BUTTON
-// ==========================================
+/* =========================================================
+   PDF BUTTON
+========================================================= */
 
 function removePDFButton() {
 
-    const old =
+    const oldButton =
         document.querySelector(
             ".pdf-button-container"
         );
 
-
-    if (old) {
-        old.remove();
+    if (oldButton) {
+        oldButton.remove();
     }
 }
 
 
-// ==========================================
-// ADD PDF BUTTON
-// ==========================================
-
-function addPDFButton(
-    filename
-) {
+function addPDFButton() {
 
     removePDFButton();
 
-
-    const answer =
-        document.getElementById(
-            "answer"
-        );
-
-
-    if (!answer) {
-        return;
-    }
-
-
     const container =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     container.className =
         "pdf-button-container";
 
 
     const button =
-        document.createElement(
-            "button"
-        );
-
-
-    button.type =
-        "button";
-
+        document.createElement("button");
 
     button.className =
         "pdf-button";
 
-
-    button.innerHTML =
-        "📄 Download PDF";
-
+    button.textContent =
+        "📄 Print / Save as PDF";
 
     button.onclick =
-        function () {
-
-            downloadPDF(
-                filename
-            );
-
-        };
+        downloadPDF;
 
 
     container.appendChild(
@@ -607,17 +512,17 @@ function addPDFButton(
     );
 
 
-    answer.appendChild(
+    document.body.appendChild(
         container
     );
 }
 
 
-// ==========================================
-// DOWNLOAD PDF
-// ==========================================
+/* =========================================================
+   DOWNLOAD / PRINT PDF
+========================================================= */
 
-function downloadPDF(filename) {
+function downloadPDF() {
 
     const answer =
         document.getElementById(
@@ -632,247 +537,114 @@ function downloadPDF(filename) {
     const printWindow =
         window.open(
             "",
-            "_blank",
-            "width=900,height=700"
+            "_blank"
         );
 
 
     if (!printWindow) {
 
         alert(
-            "Please allow pop-ups for StudySphere to create the PDF."
+            "Please allow pop-ups to print or save the PDF."
         );
 
         return;
     }
 
 
-    const content =
-        answer.cloneNode(true);
-
-
-    const pdfButton =
-        content.querySelector(
-            ".pdf-button-container"
-        );
-
-
-    if (pdfButton) {
-        pdfButton.remove();
-    }
-
-
-    let styles = "";
-
-
-    document
-        .querySelectorAll(
-            'link[rel="stylesheet"], style'
+    const styles =
+        Array.from(
+            document.styleSheets
         )
-        .forEach(
-            function(element) {
+        .map(function(sheet) {
 
-                if (
-                    element.tagName
-                        .toLowerCase() ===
-                    "link"
-                ) {
+            try {
 
-                    styles += `
-                        <link
-                            rel="stylesheet"
-                            href="${element.href}"
-                        >
-                    `;
+                return Array.from(
+                    sheet.cssRules
+                )
+                .map(
+                    rule =>
+                        rule.cssText
+                )
+                .join("\n");
 
-                } else {
+            } catch (error) {
 
-                    styles += `
-                        <style>
-                            ${element.innerHTML}
-                        </style>
-                    `;
-                }
-
-            }
-        );
-
-
-    styles += `
-
-        <style>
-
-            @page {
-                size: A4;
-                margin: 12mm;
+                return "";
             }
 
-            html,
-            body {
-
-                margin: 0;
-                padding: 0;
-
-                background: white !important;
-
-            }
-
-            body {
-
-                font-family:
-                    Arial,
-                    sans-serif;
-
-            }
-
-            #answer {
-
-                width: 100% !important;
-
-                margin: 0 !important;
-
-                padding: 0 !important;
-
-            }
-
-            .normal-note-page,
-            .handwritten-note {
-
-                width: 100% !important;
-
-                max-width: none !important;
-
-                margin: 0 !important;
-
-                box-sizing: border-box;
-
-                box-shadow: none !important;
-
-                animation: none !important;
-
-                transform: none !important;
-
-                page-break-after: always;
-
-                break-after: page;
-
-                page-break-inside: avoid;
-
-                break-inside: avoid;
-
-            }
-
-            .normal-note-page:last-child,
-            .handwritten-note:last-child {
-
-                page-break-after: auto;
-
-                break-after: auto;
-
-            }
-
-            .note-diagram {
-
-                width: 100% !important;
-
-                overflow: visible !important;
-
-                page-break-inside: avoid;
-
-                break-inside: avoid;
-
-            }
-
-            .note-diagram svg {
-
-                max-width: 100% !important;
-
-                height: auto !important;
-
-            }
-
-            h1,
-            h2,
-            h3 {
-
-                page-break-after: avoid;
-
-                break-after: avoid;
-
-            }
-
-        </style>
-
-    `;
+        })
+        .join("\n");
 
 
-    printWindow.document.open();
-
-
-    printWindow.document.write(`
-
+    printWindow.document.write(
+        `
         <!DOCTYPE html>
 
         <html>
 
         <head>
 
-            <meta charset="UTF-8">
+            <title>StudySphere Notes</title>
 
-            <title>
-                ${filename.replace(".pdf", "")}
-            </title>
+            <style>
 
-            ${styles}
+                ${styles}
+
+                body {
+                    background: white !important;
+                    padding: 20px !important;
+                }
+
+                .pdf-button-container {
+                    display: none !important;
+                }
+
+                @page {
+                    size: A4;
+                    margin: 15mm;
+                }
+
+            </style>
 
         </head>
 
         <body>
 
-            ${content.outerHTML}
+            ${answer.innerHTML}
 
         </body>
 
         </html>
-
-    `);
+        `
+    );
 
 
     printWindow.document.close();
 
 
-    setTimeout(
+    printWindow.onload =
         function() {
-
-            printWindow.focus();
-
-            printWindow.print();
-
 
             setTimeout(
                 function() {
 
-                    printWindow.close();
+                    printWindow.focus();
+
+                    printWindow.print();
 
                 },
-                1500
+                700
             );
-
-        },
-        1200
-    );
+        };
 }
 
 
-// ==========================================
-// ASK AI
-// ==========================================
+/* =========================================================
+   ASK AI
+========================================================= */
 
 async function askAI() {
-
-    hideAllControls();
-    removePDFButton();
-
 
     const question =
         document
@@ -889,22 +661,35 @@ async function askAI() {
 
     if (!question) {
 
-        answer.innerText =
-            "Please enter a question.";
+        answer.innerHTML =
+            `
+            <div class="answer-card">
+                <p>Please enter a question.</p>
+            </div>
+            `;
 
         return;
     }
 
 
-    answer.innerText =
-        "Thinking...";
+    hideAllControls();
+
+    removePDFButton();
+
+
+    answer.innerHTML =
+        `
+        <div class="answer-card">
+            <p>🤔 Thinking...</p>
+        </div>
+        `;
 
 
     try {
 
         const response =
             await fetch(
-                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                API_URL,
                 {
                     method: "POST",
 
@@ -913,12 +698,11 @@ async function askAI() {
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-
-                        question:
-                            question
-
-                    })
+                    body:
+                        JSON.stringify({
+                            question:
+                                question
+                        })
                 }
             );
 
@@ -932,21 +716,35 @@ async function askAI() {
             data.error
         ) {
 
-            answer.innerText =
-                "Error: " +
-                (
-                    data.error ||
-                    "Unable to get an answer."
-                );
+            answer.innerHTML =
+                `
+                <div class="answer-card">
+
+                    <p>
+                        Error:
+                        ${
+                            data.error ||
+                            "Unable to get an answer."
+                        }
+                    </p>
+
+                </div>
+                `;
 
             return;
         }
 
 
         answer.innerHTML =
-            formatAnswer(
-                data.answer
-            );
+            `
+            <div class="answer-card">
+
+                ${formatAnswer(
+                    data.answer
+                )}
+
+            </div>
+            `;
 
 
         await renderDiagrams();
@@ -954,24 +752,33 @@ async function askAI() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Ask AI error:",
+            error
+        );
 
-        answer.innerText =
-            "Unable to connect to AI. Please try again.";
 
+        answer.innerHTML =
+            `
+            <div class="answer-card">
+
+                <p>
+                    Unable to connect to
+                    StudySphere AI.
+                    Please try again.
+                </p>
+
+            </div>
+            `;
     }
 }
 
 
-// ==========================================
-// MAKE NOTES
-// ==========================================
+/* =========================================================
+   MAKE NOTES
+========================================================= */
 
 async function makeNotes() {
-
-    showNotesControls();
-    removePDFButton();
-
 
     const question =
         document
@@ -988,36 +795,134 @@ async function makeNotes() {
 
     if (!question) {
 
-        answer.innerText =
-            "Please enter a topic for your notes.";
+        answer.innerHTML =
+            `
+            <div class="answer-card">
+                <p>Please enter a topic first.</p>
+            </div>
+            `;
 
         return;
     }
 
 
+    showNotesControls();
+
+    removePDFButton();
+
+
     const pageCount =
         getPageCount(
-            "notesPageNumber",
-            "customNotesPages"
+            "notes"
         );
 
 
-    const diagramChoice =
-        document.getElementById(
-            "notesDiagram"
-        )?.value ||
-        "no";
+    const includeDiagram =
+        document
+            .getElementById(
+                "notesDiagram"
+            )
+            .value === "yes";
 
 
-    answer.innerText =
-        "📝 Creating your notes...";
+    answer.innerHTML =
+        `
+        <div class="answer-card">
+
+            <p>
+                📝 Creating
+                ${pageCount}
+                page(s) of notes...
+            </p>
+
+        </div>
+        `;
+
+
+    let diagramInstruction =
+        "";
+
+
+    if (includeDiagram) {
+
+        diagramInstruction =
+            `
+IMPORTANT DIAGRAM INSTRUCTION:
+
+Also create ONE topic-specific Mermaid
+diagram inside:
+
+\`\`\`mermaid
+...
+\`\`\`
+
+The diagram must:
+
+- Be directly related to the topic.
+- Help understand the topic visually.
+- Use 6–12 meaningful nodes.
+- Use suitable Mermaid shapes.
+- Avoid generic Start → Process → End diagrams.
+- Use short labels.
+- Be clean and A4 printable.
+- Represent actual concepts, relationships,
+  steps, components, classifications,
+  architecture, or flow related to the topic.
+
+Do not explain the Mermaid code separately.
+`;
+    }
+
+
+    const prompt =
+        `
+You are helping a college student prepare
+for exams.
+
+Topic:
+${question}
+
+Create clear, simple,
+exam-oriented notes.
+
+The student requested:
+${pageCount} page(s).
+
+Structure the notes naturally according
+to the topic.
+
+Important requirements:
+
+- Use simple language.
+- Include important definitions.
+- Include important concepts.
+- Include examples where useful.
+- Use headings and bullet points.
+- Do not add unnecessary information.
+- Make the content suitable for college exams.
+- Cover the topic properly.
+- Divide the content across approximately
+  ${pageCount} pages.
+- Mark pages as:
+
+PAGE 1
+PAGE 2
+PAGE 3
+
+and so on.
+
+Do not make every page artificially equal.
+Keep related information together.
+
+${diagramInstruction}
+`;
 
 
     try {
 
         const response =
             await fetch(
-                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                API_URL,
                 {
                     method: "POST",
 
@@ -1026,71 +931,11 @@ async function makeNotes() {
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-
-                        question:
-
-`Create clear, well-organized study notes on:
-
-${question}
-
-The student wants ${pageCount} page(s).
-
-Divide the notes naturally into exactly ${pageCount} clearly separated page(s).
-
-Use this format:
-
-PAGE 1
-content
-
-PAGE 2
-content
-
-Continue only up to PAGE ${pageCount}.
-
-Rules:
-- Stay completely focused on the topic.
-- Do not repeat information.
-- Each page should contain useful new information.
-- Use simple language suitable for a college student.
-- Include definitions, important points, key concepts, examples, formulas, algorithms, applications or exam points when relevant.
-- Use headings and bullet points where useful.
-- Make the notes easy to revise.
-- Do not mention these instructions.
-
-${diagramChoice === "yes" ? `
-
-After the notes, create ONE Mermaid diagram that visually summarizes the topic.
-
-The diagram must:
-- Be specifically about "${question}".
-- Be understandable even without reading the theory.
-- Show the most important concepts, steps, relationships or components.
-- Use short but meaningful text inside shapes.
-- Use suitable Mermaid shapes such as rectangles, rounded boxes, circles, diamonds, cylinders or other appropriate shapes.
-- Choose the most suitable layout for this particular topic.
-- Use arrows to clearly show relationships or flow.
-- Be visually attractive and interesting to read.
-- Do not use a generic Start → Process → End diagram.
-- Prefer approximately 6–12 meaningful nodes.
-- Keep it simple enough for an A4 page.
-- Make it useful for exam revision.
-- Return the diagram only inside one Mermaid code block.
-- Use valid Mermaid syntax.
-
-Example format:
-
-\`\`\`mermaid
-flowchart TD
-    A[Main Concept] --> B[Important Step]
-    B --> C{Decision}
-    C -->|Yes| D[Result]
-    C -->|No| E[Alternative]
-\`\`\`
-
-` : ""}`
-
-                    })
+                    body:
+                        JSON.stringify({
+                            question:
+                                prompt
+                        })
                 }
             );
 
@@ -1104,52 +949,45 @@ flowchart TD
             data.error
         ) {
 
-            answer.innerText =
-                "Error: " +
-                (
-                    data.error ||
-                    "Unable to create notes."
-                );
+            answer.innerHTML =
+                `
+                <div class="answer-card">
+
+                    <p>
+                        Error:
+                        ${
+                            data.error ||
+                            "Unable to create notes."
+                        }
+                    </p>
+
+                </div>
+                `;
 
             return;
         }
 
 
-        if (!data.answer) {
-
-            answer.innerText =
-                "The AI did not return any notes.";
-
-            return;
-        }
+        const rawAnswer =
+            data.answer || "";
 
 
-        // Extract AI-generated diagram
-        let diagram = null;
+        const diagram =
+            extractMermaidDiagram(
+                rawAnswer
+            );
 
 
-        if (
-            diagramChoice === "yes"
-        ) {
-
-            diagram =
-                extractMermaidDiagram(
-                    data.answer
-                );
-
-        }
-
-
-        // Remove diagram from theory
-        const notesText =
+        const notesWithoutDiagram =
             removeMermaidDiagram(
-                data.answer
+                rawAnswer
             );
 
 
         const pages =
             splitPages(
-                notesText
+                notesWithoutDiagram,
+                pageCount
             );
 
 
@@ -1157,135 +995,91 @@ flowchart TD
 
 
         pages.forEach(
-            function(content, index) {
+            function(page, index) {
 
-                html += `
+                html +=
+                    `
+                    <div class="answer-card">
 
-                    <div
-                        class="normal-note-page pdf-page"
-                    >
+                        <h3>
+                            📝 Page
+                            ${index + 1}
+                        </h3>
 
-                        <div
-                            class="note-page-number"
-                        >
-                            Page ${index + 1}
-                        </div>
+                        ${formatAnswer(
+                            page
+                        )}
 
-                        <div
-                            class="note-content"
-                        >
+                    </div>
+                    `;
+            }
+        );
 
-                            ${formatAnswer(
-                                content
-                            )}
 
+        if (
+            includeDiagram &&
+            diagram
+        ) {
+
+            html +=
+                `
+                <div class="answer-card">
+
+                    <h3>
+                        📊 Visual Summary
+                    </h3>
+
+                    <div class="note-diagram">
+
+                        <div class="mermaid">
+                            ${diagram}
                         </div>
 
                     </div>
 
+                </div>
                 `;
-
-            }
-        );
+        }
 
 
         answer.innerHTML =
             html;
 
 
-        // Add intelligent diagram
-        if (
-            diagramChoice === "yes" &&
-            diagram
-        ) {
-
-            const diagramArea =
-                document.createElement(
-                    "div"
-                );
+        await renderDiagrams();
 
 
-            diagramArea.className =
-                "normal-note-page pdf-page";
-
-
-            diagramArea.innerHTML = `
-
-                <div
-                    class="note-page-number"
-                >
-                    Visual Summary
-                </div>
-
-                <div class="note-content">
-
-                    <h2>📊 Visual Summary</h2>
-
-                </div>
-
-            `;
-
-
-            answer.appendChild(
-                diagramArea
-            );
-
-
-            const diagramTarget =
-                document.createElement(
-                    "div"
-                );
-
-
-            diagramArea
-                .querySelector(
-                    ".note-content"
-                )
-                .appendChild(
-                    diagramTarget
-                );
-
-
-            displayAIDiagram(
-                diagram,
-                diagramTarget
-            );
-
-
-            await renderDiagrams();
-
-        }
-
-
-        addPDFButton(
-            "StudySphere-Notes.pdf"
-        );
+        addPDFButton();
 
 
     } catch (error) {
 
         console.error(
-            "Notes error:",
+            "Make Notes error:",
             error
         );
 
 
-        answer.innerText =
-            "Unable to create notes. Please try again.";
+        answer.innerHTML =
+            `
+            <div class="answer-card">
 
+                <p>
+                    Unable to create notes.
+                    Please try again.
+                </p>
+
+            </div>
+            `;
     }
 }
 
 
-// ==========================================
-// HANDWRITTEN NOTES
-// ==========================================
+/* =========================================================
+   HANDWRITTEN NOTES
+========================================================= */
 
 async function handwrittenNotes() {
-
-    showHandwrittenControls();
-    removePDFButton();
-
 
     const question =
         document
@@ -1302,17 +1096,29 @@ async function handwrittenNotes() {
 
     if (!question) {
 
-        answer.innerText =
-            "Please enter a topic for handwritten notes.";
+        answer.innerHTML =
+            `
+            <div class="answer-card">
+
+                <p>
+                    Please enter a topic first.
+                </p>
+
+            </div>
+            `;
 
         return;
     }
 
 
+    showHandwrittenControls();
+
+    removePDFButton();
+
+
     const pageCount =
         getPageCount(
-            "handwrittenPageNumber",
-            "customHandwrittenPages"
+            "handwritten"
         );
 
 
@@ -1320,35 +1126,109 @@ async function handwrittenNotes() {
         document
             .getElementById(
                 "pageBackground"
-            )?.value ||
-        "lined";
+            )
+            .value;
 
 
     const font =
         document
             .getElementById(
                 "handwrittenFont"
-            )?.value ||
-        "caveat";
+            )
+            .value;
 
 
-    const diagramChoice =
+    const includeDiagram =
         document
             .getElementById(
                 "handwrittenDiagram"
-            )?.value ||
-        "no";
+            )
+            .value === "yes";
 
 
     answer.innerHTML =
-        "✍️ Creating handwritten notes...";
+        `
+        <div class="answer-card">
+
+            <p>
+                ✍️ Creating handwritten notes...
+            </p>
+
+        </div>
+        `;
+
+
+    let diagramInstruction =
+        "";
+
+
+    if (includeDiagram) {
+
+        diagramInstruction =
+            `
+Also create ONE topic-specific Mermaid
+diagram using:
+
+\`\`\`mermaid
+...
+\`\`\`
+
+Requirements:
+
+- Directly related to the topic.
+- Useful for understanding the topic.
+- 6–12 meaningful nodes.
+- Suitable Mermaid shapes.
+- Short labels.
+- Clean and printable.
+- Not a generic Start → Process → End diagram.
+`;
+    }
+
+
+    const prompt =
+        `
+You are creating handwritten-style
+college study notes.
+
+Topic:
+${question}
+
+Create simple exam-oriented notes
+for ${pageCount} page(s).
+
+Requirements:
+
+- Use simple language.
+- Include definitions.
+- Include important concepts.
+- Include examples where useful.
+- Use headings.
+- Use bullet points.
+- Keep the content exam-focused.
+- Avoid unnecessary details.
+
+Divide the content naturally.
+
+Use:
+
+PAGE 1
+PAGE 2
+PAGE 3
+
+and so on.
+
+Do not make every page artificially equal.
+
+${diagramInstruction}
+`;
 
 
     try {
 
         const response =
             await fetch(
-                "https://ai-study-assistant.anshikasaxena50.workers.dev",
+                API_URL,
                 {
                     method: "POST",
 
@@ -1357,71 +1237,11 @@ async function handwrittenNotes() {
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-
-                        question:
-
-`Create detailed handwritten-style study notes on:
-
-${question}
-
-The student wants ${pageCount} page(s).
-
-Divide the notes naturally into exactly ${pageCount} clearly separated page(s).
-
-Use this format:
-
-PAGE 1
-content
-
-PAGE 2
-content
-
-Continue only up to PAGE ${pageCount}.
-
-Rules:
-1. Stay completely focused on the topic.
-2. Do not repeat information.
-3. Each page should contain useful new information.
-4. Use simple language suitable for a college student.
-5. Include definitions, important points, examples, formulas, algorithms, applications or exam points when relevant.
-6. Use headings and bullet points where useful.
-7. Keep the content suitable for handwritten study notes.
-8. Do not mention these instructions.
-
-${diagramChoice === "yes" ? `
-
-After the notes, create ONE Mermaid diagram that visually summarizes the topic.
-
-The diagram must:
-- Be specifically about "${question}".
-- Be understandable even without reading the theory.
-- Show the most important concepts, steps, relationships or components.
-- Use short but meaningful text inside shapes.
-- Use suitable Mermaid shapes such as rectangles, rounded boxes, circles, diamonds, cylinders or other appropriate shapes.
-- Choose the most suitable layout for this particular topic.
-- Use arrows to clearly show relationships or flow.
-- Be visually attractive and interesting to read.
-- Do not use a generic Start → Process → End diagram.
-- Prefer approximately 6–12 meaningful nodes.
-- Keep it simple enough for an A4 handwritten-note page.
-- Make it useful for exam revision.
-- Return the diagram only inside one Mermaid code block.
-- Use valid Mermaid syntax.
-
-Example format:
-
-\`\`\`mermaid
-flowchart TD
-    A[Main Concept] --> B[Important Step]
-    B --> C{Decision}
-    C -->|Yes| D[Result]
-    C -->|No| E[Alternative]
-\`\`\`
-
-` : ""}`
-
-                    })
+                    body:
+                        JSON.stringify({
+                            question:
+                                prompt
+                        })
                 }
             );
 
@@ -1435,52 +1255,45 @@ flowchart TD
             data.error
         ) {
 
-            answer.innerText =
-                "Error: " +
-                (
-                    data.error ||
-                    "StudySphere AI is temporarily unavailable. Please try again shortly."
-                );
+            answer.innerHTML =
+                `
+                <div class="answer-card">
+
+                    <p>
+                        Error:
+                        ${
+                            data.error ||
+                            "Unable to create handwritten notes."
+                        }
+                    </p>
+
+                </div>
+                `;
 
             return;
         }
 
 
-        if (!data.answer) {
-
-            answer.innerText =
-                "The AI did not return any handwritten notes.";
-
-            return;
-        }
+        const rawAnswer =
+            data.answer || "";
 
 
-        // Extract AI-generated diagram
-        let diagram = null;
+        const diagram =
+            extractMermaidDiagram(
+                rawAnswer
+            );
 
 
-        if (
-            diagramChoice === "yes"
-        ) {
-
-            diagram =
-                extractMermaidDiagram(
-                    data.answer
-                );
-
-        }
-
-
-        // Remove diagram from handwritten notes
-        const notesText =
+        const notesWithoutDiagram =
             removeMermaidDiagram(
-                data.answer
+                rawAnswer
             );
 
 
         const pages =
             splitPages(
-                notesText
+                notesWithoutDiagram,
+                pageCount
             );
 
 
@@ -1488,120 +1301,68 @@ flowchart TD
 
 
         pages.forEach(
-            function(content, index) {
+            function(page) {
 
-                html += `
-
+                html +=
+                    `
                     <div
                         class="
-                            handwritten-note
-                            pdf-page
-                            background-${background}
+                            handwritten-page
+                            bg-${background}
                             font-${font}
                         "
                     >
 
-                        <div
-                            class="note-page-number"
-                        >
-                            Page ${index + 1}
-                        </div>
+                        ${formatAnswer(
+                            page
+                        )}
 
-                        <div
-                            class="note-content"
-                        >
+                    </div>
+                    `;
+            }
+        );
 
-                            ${formatAnswer(
-                                content
-                            )}
 
+        if (
+            includeDiagram &&
+            diagram
+        ) {
+
+            html +=
+                `
+                <div
+                    class="
+                        handwritten-page
+                        bg-${background}
+                        font-${font}
+                    "
+                >
+
+                    <h2>
+                        📊 Visual Summary
+                    </h2>
+
+                    <div class="note-diagram">
+
+                        <div class="mermaid">
+                            ${diagram}
                         </div>
 
                     </div>
 
+                </div>
                 `;
-
-            }
-        );
+        }
 
 
         answer.innerHTML =
             html;
 
 
-        // Add intelligent diagram
-        if (
-            diagramChoice === "yes" &&
-            diagram
-        ) {
-
-            const diagramArea =
-                document.createElement(
-                    "div"
-                );
+        await renderDiagrams();
 
 
-            diagramArea.className = `
-
-                handwritten-note
-                pdf-page
-                background-${background}
-                font-${font}
-
-            `;
-
-
-            diagramArea.innerHTML = `
-
-                <div
-                    class="note-page-number"
-                >
-                    Visual Summary
-                </div>
-
-                <div class="note-content">
-
-                    <h2>📊 Visual Summary</h2>
-
-                </div>
-
-            `;
-
-
-            answer.appendChild(
-                diagramArea
-            );
-
-
-            const diagramTarget =
-                document.createElement(
-                    "div"
-                );
-
-
-            diagramArea
-                .querySelector(
-                    ".note-content"
-                )
-                .appendChild(
-                    diagramTarget
-                );
-
-
-            displayAIDiagram(
-                diagram,
-                diagramTarget
-            );
-
-
-            await renderDiagrams();
-
-        }
-
-
-        addPDFButton(
-            "StudySphere-Handwritten-Notes.pdf"
-        );
+        addPDFButton();
 
 
     } catch (error) {
@@ -1612,25 +1373,319 @@ flowchart TD
         );
 
 
-        answer.innerText =
-            "Unable to create handwritten notes. Please try again.";
+        answer.innerHTML =
+            `
+            <div class="answer-card">
 
+                <p>
+                    Unable to create handwritten
+                    notes. Please try again.
+                </p>
+
+            </div>
+            `;
     }
 }
 
 
-// ==========================================
-// PAGE CONTROL EVENTS
-// ==========================================
+/* =========================================================
+   STUDY MODE
+========================================================= */
+
+function openStudyMode() {
+
+    const studyMode =
+        document.getElementById(
+            "studyMode"
+        );
+
+
+    if (!studyMode) {
+        return;
+    }
+
+
+    studyMode.classList.remove(
+        "hidden"
+    );
+
+
+    showStudyStep(
+        "learn"
+    );
+
+
+    studyMode.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+/* =========================================================
+   STUDY MODE NAVIGATION
+========================================================= */
+
+function showStudyStep(step) {
+
+    const steps = [
+        "learn",
+        "practice",
+        "test",
+        "revise"
+    ];
+
+
+    steps.forEach(
+        function(item) {
+
+            const section =
+                document.getElementById(
+                    "study" +
+                    item
+                        .charAt(0)
+                        .toUpperCase() +
+                    item.slice(1) +
+                    "Step"
+                );
+
+
+            if (section) {
+
+                section.classList.add(
+                    "hidden"
+                );
+            }
+        }
+    );
+
+
+    const selected =
+        document.getElementById(
+            "study" +
+            step
+                .charAt(0)
+                .toUpperCase() +
+            step.slice(1) +
+            "Step"
+        );
+
+
+    if (selected) {
+
+        selected.classList.remove(
+            "hidden"
+        );
+    }
+
+
+    document
+        .querySelectorAll(
+            ".study-step"
+        )
+        .forEach(
+            function(button, index) {
+
+                button.classList.toggle(
+                    "active",
+                    steps[index] === step
+                );
+            }
+        );
+}
+
+
+/* =========================================================
+   STUDY MODE LEARN
+========================================================= */
+
+async function studyLearn() {
+
+    const topic =
+        document
+            .getElementById(
+                "studyTopic"
+            )
+            .value
+            .trim();
+
+
+    const result =
+        document.getElementById(
+            "studyResult"
+        );
+
+
+    if (!topic) {
+
+        result.innerHTML =
+            `
+            <div class="study-empty-card">
+
+                <span>⚠️</span>
+
+                <p>
+                    Please enter a topic first.
+                </p>
+
+            </div>
+            `;
+
+        return;
+    }
+
+
+    result.innerHTML =
+        `
+        <div class="study-empty-card">
+
+            <span>📚</span>
+
+            <p>
+                Learning about
+                <strong>${topic}</strong>...
+            </p>
+
+        </div>
+        `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            question:
+                                `
+You are helping a college student
+learn a topic for exams.
+
+Topic:
+${topic}
+
+Explain this topic in simple,
+clear, exam-oriented language.
+
+Structure the response as:
+
+1. What is it?
+2. Main idea
+3. Important concepts
+4. Simple example
+5. Key points to remember
+
+Rules:
+
+- Keep it easy to understand.
+- Avoid unnecessary detail.
+- Use headings and bullet points.
+- Explain technical terms briefly.
+- Make it useful for exam preparation.
+- Do not mention these instructions.
+                                `
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            data.error
+        ) {
+
+            result.innerHTML =
+                `
+                <div class="study-empty-card">
+
+                    <span>⚠️</span>
+
+                    <p>
+                        Error:
+                        ${
+                            data.error ||
+                            "Unable to load the topic."
+                        }
+                    </p>
+
+                </div>
+                `;
+
+            return;
+        }
+
+
+        result.innerHTML =
+            `
+            <div class="study-learn-card">
+
+                <h3>
+                    📚 ${topic}
+                </h3>
+
+                <div>
+
+                    ${formatAnswer(
+                        data.answer
+                    )}
+
+                </div>
+
+            </div>
+            `;
+
+
+        await renderDiagrams();
+
+
+    } catch (error) {
+
+        console.error(
+            "Study Mode error:",
+            error
+        );
+
+
+        result.innerHTML =
+            `
+            <div class="study-empty-card">
+
+                <span>⚠️</span>
+
+                <p>
+                    Unable to connect to
+                    StudySphere AI.
+                    Please try again.
+                </p>
+
+            </div>
+            `;
+    }
+}
+
+
+/* =========================================================
+   CUSTOM PAGE INPUTS
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function() {
 
-        hideAllControls();
-
-
-        // Notes custom pages
         const notesPageNumber =
             document.getElementById(
                 "notesPageNumber"
@@ -1652,33 +1707,16 @@ document.addEventListener(
                 "change",
                 function() {
 
-                    if (
-                        this.value === "custom"
-                    ) {
-
-                        customNotesPages
-                            .classList
-                            .remove(
-                                "hidden"
-                            );
-
-                    } else {
-
-                        customNotesPages
-                            .classList
-                            .add(
-                                "hidden"
-                            );
-
-                    }
+                    customNotesPages.classList.toggle(
+                        "hidden",
+                        this.value !== "custom"
+                    );
 
                 }
             );
-
         }
 
 
-        // Handwritten custom pages
         const handwrittenPageNumber =
             document.getElementById(
                 "handwrittenPageNumber"
@@ -1700,502 +1738,74 @@ document.addEventListener(
                 "change",
                 function() {
 
+                    customHandwrittenPages.classList.toggle(
+                        "hidden",
+                        this.value !== "custom"
+                    );
+
+                }
+            );
+        }
+
+
+        /*
+            Enter key for main question
+        */
+
+        const question =
+            document.getElementById(
+                "question"
+            );
+
+
+        if (question) {
+
+            question.addEventListener(
+                "keydown",
+                function(event) {
+
                     if (
-                        this.value ===
-                        "custom"
+                        event.key === "Enter"
                     ) {
 
-                        customHandwrittenPages
-                            .classList
-                            .remove(
-                                "hidden"
-                            );
+                        event.preventDefault();
 
-                    } else {
-
-                        customHandwrittenPages
-                            .classList
-                            .add(
-                                "hidden"
-                            );
-
+                        askAI();
                     }
 
                 }
             );
+        }
 
+
+        /*
+            Enter key for Study Mode topic
+        */
+
+        const studyTopic =
+            document.getElementById(
+                "studyTopic"
+            );
+
+
+        if (studyTopic) {
+
+            studyTopic.addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (
+                        event.key === "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                        studyLearn();
+                    }
+
+                }
+            );
         }
 
     }
 );
-// ==========================================
-// STUDY MODE
-// ==========================================
-
-function startStudyMode() {
-
-    hideAllControls();
-    removePDFButton();
-
-    const studyMode =
-        document.getElementById("studyMode");
-
-    if (studyMode) {
-
-        studyMode.classList.remove("hidden");
-
-    }
-
-}
-
-
-// ==========================================
-// STUDY MODE - LEARN
-// ==========================================
-
-async function studyLearn() {
-
-    const topic =
-        document
-            .getElementById("studyTopic")
-            .value
-            .trim();
-
-    const result =
-        document.getElementById(
-            "studyResult"
-        );
-
-
-    if (!topic) {
-
-        result.innerHTML =
-            `<p>Please enter a topic to study.</p>`;
-
-        return;
-    }
-
-
-    result.innerHTML =
-        `<p>📚 Learning about <strong>${topic}</strong>...</p>`;
-
-
-    try {
-
-        const response =
-            await fetch(
-                "https://ai-study-assistant.anshikasaxena50.workers.dev",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        question:
-
-`You are helping a college student learn a topic for exams.
-
-Topic:
-${topic}
-
-Explain this topic in simple, clear, exam-oriented language.
-
-Structure the response as:
-
-1. What is it?
-2. Main idea
-3. Important concepts
-4. Simple example
-5. Key points to remember
-
-Rules:
-- Keep it easy to understand.
-- Avoid unnecessary detail.
-- Use headings and bullet points.
-- Explain technical terms briefly.
-- Make it useful for exam preparation.
-- Do not mention these instructions.`
-
-                    })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            !response.ok ||
-            data.error
-        ) {
-
-            result.innerHTML =
-                `<p>Error: ${
-                    data.error ||
-                    "Unable to load the topic."
-                }</p>`;
-
-            return;
-        }
-
-
-        result.innerHTML = `
-
-            <div class="study-learn-card">
-
-                <h3>
-                    📚 ${topic}
-                </h3>
-
-                <div>
-                    ${
-                        formatAnswer(
-                            data.answer
-                        )
-                    }
-                </div>
-
-            </div>
-
-        `;
-
-
-        await renderDiagrams();
-
-
-    } catch (error) {
-
-        console.error(
-            "Study Mode error:",
-            error
-        );
-
-
-        result.innerHTML =
-            `<p>
-                Unable to connect to StudySphere AI.
-                Please try again.
-            </p>`;
-
-    }
-
-}
-// ==========================================
-// STUDY MODE - PRACTICE
-// ==========================================
-
-async function startPractice() {
-
-    const topic =
-        document
-            .getElementById("studyTopic")
-            .value
-            .trim();
-
-    const practiceSection =
-        document.getElementById(
-            "practiceSection"
-        );
-
-    const practiceContent =
-        document.getElementById(
-            "practiceContent"
-        );
-
-
-    if (!topic) {
-
-        practiceContent.innerHTML =
-            "<p>Please enter a topic first.</p>";
-
-        return;
-    }
-
-
-    practiceSection.classList.remove(
-        "hidden"
-    );
-
-
-    practiceContent.innerHTML =
-        "<p>🧠 Creating practice questions...</p>";
-
-
-    try {
-
-        const response =
-            await fetch(
-                "https://ai-study-assistant.anshikasaxena50.workers.dev",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        question:
-
-`Create 5 short-answer practice questions for a college student studying:
-
-${topic}
-
-Rules:
-- Questions must test understanding, not memorization only.
-- Start from basic and gradually become slightly more difficult.
-- Do not give the answers.
-- Keep each question short.
-- Number them 1 to 5.
-- Return only the questions.`
-
-                    })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            !response.ok ||
-            data.error
-        ) {
-
-            practiceContent.innerHTML =
-                `<p>Error: ${
-                    data.error ||
-                    "Unable to create practice questions."
-                }</p>`;
-
-            return;
-        }
-
-
-        const questions =
-            data.answer
-                .split("\n")
-                .filter(
-                    line =>
-                        line.trim() !== ""
-                );
-
-
-        let html = "";
-
-
-        questions.forEach(
-            function(question, index) {
-
-                const cleanQuestion =
-                    question
-                        .replace(
-                            /^\s*\d+[\.\)]\s*/,
-                            ""
-                        )
-                        .trim();
-
-
-                if (!cleanQuestion) {
-                    return;
-                }
-
-
-                html += `
-
-                    <div
-                        class="practice-question"
-                    >
-
-                        <h4>
-                            Question ${
-                                index + 1
-                            }
-                        </h4>
-
-                        <p>
-                            ${cleanQuestion}
-                        </p>
-
-                        <textarea
-                            class="practice-answer"
-                            id="practiceAnswer${index}"
-                            placeholder="Write your answer here..."
-                        ></textarea>
-
-                        <button
-                            class="practice-check-button"
-                            onclick="checkPracticeAnswer(
-                                ${index},
-                                \`${cleanQuestion.replace(/`/g, "\\`")}\`
-                            )"
-                        >
-                            Check Answer
-                        </button>
-
-                        <div
-                            id="practiceFeedback${index}"
-                            class="practice-feedback"
-                        ></div>
-
-                    </div>
-
-                `;
-
-            }
-        );
-
-
-        practiceContent.innerHTML =
-            html;
-
-
-    } catch (error) {
-
-        console.error(
-            "Practice error:",
-            error
-        );
-
-
-        practiceContent.innerHTML =
-            `<p>
-                Unable to connect to StudySphere AI.
-                Please try again.
-            </p>`;
-
-    }
-}
-
-
-// ==========================================
-// CHECK PRACTICE ANSWER
-// ==========================================
-
-async function checkPracticeAnswer(
-    index,
-    question
-) {
-
-    const answer =
-        document
-            .getElementById(
-                `practiceAnswer${index}`
-            )
-            .value
-            .trim();
-
-
-    const feedback =
-        document.getElementById(
-            `practiceFeedback${index}`
-        );
-
-
-    if (!answer) {
-
-        feedback.innerHTML =
-            "Please write an answer first.";
-
-        return;
-    }
-
-
-    feedback.innerHTML =
-        "🔍 Checking your answer...";
-
-
-    try {
-
-        const response =
-            await fetch(
-                "https://ai-study-assistant.anshikasaxena50.workers.dev",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        question:
-
-`Check this student's answer.
-
-Question:
-${question}
-
-Student's answer:
-${answer}
-
-Evaluate the answer for a college exam.
-
-Return:
-
-Result: Correct / Partially Correct / Needs Improvement
-
-Explanation:
-Give a short explanation of what was correct or missing.
-
-Correct points:
-List the important points that should be included.
-
-Rules:
-- Be fair.
-- Do not require exact wording.
-- Give partial credit when the main idea is correct.
-- Keep the feedback concise.`
-
-                    })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            !response.ok ||
-            data.error
-        ) {
-
-            feedback.innerHTML =
-                `Error: ${
-                    data.error ||
-                    "Unable to check answer."
-                }`;
-
-            return;
-        }
-
-
-        feedback.innerHTML =
-            formatAnswer(
-                data.answer
-            );
-
-
-    } catch (error) {
-
-        console.error(
-            "Answer checking error:",
-            error
-        );
-
-
-        feedback.innerHTML =
-            "Unable to check the answer. Please try again.";
-
-    }
-
-}
