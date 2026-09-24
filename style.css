@@ -1,17 +1,18 @@
-/* ==========================================
-   STUDYSPHERE - AESTHETIC STYLE
-   FUNCTIONALITY PRESERVED
-========================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Shadows+Into+Light&display=swap');
 
 
-/* ==========================================
-   BODY
-========================================== */
+/* =========================
+   BASIC
+========================= */
+
+* {
+    box-sizing: border-box;
+}
 
 body {
+
     margin: 0;
+
     padding: 45px 20px 60px;
 
     font-family:
@@ -20,16 +21,19 @@ body {
         sans-serif;
 
     background:
+
         radial-gradient(
             circle at top left,
             #eee7ff 0%,
             transparent 35%
         ),
+
         radial-gradient(
             circle at top right,
             #ffe8f2 0%,
             transparent 35%
         ),
+
         linear-gradient(
             135deg,
             #f8f6ff,
@@ -42,16 +46,15 @@ body {
     text-align: center;
 
     min-height: 100vh;
-
-    box-sizing: border-box;
 }
 
 
-/* ==========================================
-   MAIN TITLE
-========================================== */
+/* =========================
+   HEADING
+========================= */
 
 h1 {
+
     margin: 0 0 8px;
 
     font-size: 42px;
@@ -63,11 +66,13 @@ h1 {
     color: #5d4b8c;
 
     text-shadow:
-        0 3px 12px rgba(93, 75, 140, 0.15);
+        0 3px 12px
+        rgba(93, 75, 140, 0.15);
 }
 
 
 body > p {
+
     margin: 0 0 30px;
 
     color: #766f86;
@@ -78,27 +83,28 @@ body > p {
 }
 
 
-/* ==========================================
-   QUESTION BOX
-========================================== */
+/* =========================
+   QUESTION
+========================= */
 
 #question {
+
     display: block;
 
     width: 85%;
+
     max-width: 720px;
 
     padding: 16px 20px;
 
     margin: 0 auto 22px;
 
-    box-sizing: border-box;
-
     border: 1px solid #e1dced;
 
     border-radius: 16px;
 
-    background: rgba(255, 255, 255, 0.82);
+    background:
+        rgba(255,255,255,0.82);
 
     color: #373143;
 
@@ -107,38 +113,46 @@ body > p {
     outline: none;
 
     box-shadow:
-        0 8px 25px rgba(91, 75, 120, 0.08);
+        0 8px 25px
+        rgba(91,75,120,0.08);
 
     backdrop-filter: blur(10px);
 
     transition:
-        border-color 0.25s ease,
-        box-shadow 0.25s ease,
-        transform 0.25s ease;
+        border-color .25s ease,
+        box-shadow .25s ease,
+        transform .25s ease;
 }
 
 
 #question::placeholder {
+
     color: #a49caf;
 }
 
 
 #question:focus {
+
     border-color: #b7a5e5;
 
     box-shadow:
-        0 0 0 4px rgba(183, 165, 229, 0.18),
-        0 10px 30px rgba(91, 75, 120, 0.1);
+        0 0 0 4px
+        rgba(183,165,229,.18),
 
-    transform: translateY(-1px);
+        0 10px 30px
+        rgba(91,75,120,.1);
+
+    transform:
+        translateY(-1px);
 }
 
 
-/* ==========================================
+/* =========================
    MAIN BUTTONS
-========================================== */
+========================= */
 
 .main-buttons {
+
     display: flex;
 
     justify-content: center;
@@ -154,9 +168,12 @@ body > p {
 
 
 .main-buttons button {
+
     padding: 12px 22px;
 
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border:
+        1px solid
+        rgba(255,255,255,.7);
 
     border-radius: 14px;
 
@@ -181,46 +198,55 @@ body > p {
         );
 
     box-shadow:
-        0 7px 18px rgba(93, 75, 140, 0.12);
+        0 7px 18px
+        rgba(93,75,140,.12);
 
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        filter 0.2s ease;
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
 }
 
 
 .main-buttons button:hover {
-    transform: translateY(-3px);
+
+    transform:
+        translateY(-3px);
 
     box-shadow:
-        0 11px 24px rgba(93, 75, 140, 0.18);
+        0 11px 24px
+        rgba(93,75,140,.18);
 
-    filter: brightness(1.02);
+    filter:
+        brightness(1.02);
 }
 
 
 .main-buttons button:active {
-    transform: translateY(0);
+
+    transform:
+        translateY(0);
 }
 
 
-/* ==========================================
+/* =========================
    HIDDEN
-   IMPORTANT - KEEP FOR JAVASCRIPT
-========================================== */
+========================= */
 
 .hidden {
+
     display: none !important;
 }
 
 
-/* ==========================================
+/* =========================
    CONTROLS
-========================================== */
+========================= */
 
 .controls {
+
     width: 90%;
+
     max-width: 720px;
 
     margin: 20px auto;
@@ -237,558 +263,454 @@ body > p {
 
     justify-content: center;
 
-    box-sizing: border-box;
-
     background:
-        rgba(255, 255, 255, 0.72);
+        rgba(255,255,255,.72);
 
     border:
-        1px solid rgba(225, 220, 239, 0.9);
+        1px solid
+        rgba(225,220,239,.9);
 
     border-radius: 18px;
 
     box-shadow:
-        0 8px 25px rgba(91, 75, 120, 0.08);
+        0 8px 25px
+        rgba(91,75,120,.08);
 
-    backdrop-filter: blur(12px);
-
-    animation:
-        controlsAppear 0.3s ease;
-}
-
-
-@keyframes controlsAppear {
-
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    backdrop-filter:
+        blur(12px);
 }
 
 
 .controls label {
-    font-weight: 600;
-
-    color: #635775;
 
     font-size: 14px;
+
+    font-weight: 600;
+
+    color: #665879;
 }
 
 
 .controls select,
 .controls input {
-    padding: 9px 13px;
+
+    padding: 9px 12px;
 
     border:
-        1px solid #ddd6eb;
+        1px solid
+        #ddd6eb;
 
     border-radius: 10px;
 
-    background: #ffffff;
+    background: white;
 
-    color: #4b425b;
-
-    font-family:
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    font-size: 14px;
+    color: #4c435d;
 
     outline: none;
+}
+
+
+/* =========================
+   ANSWER
+========================= */
+
+#answer {
+
+    width: 90%;
+
+    max-width: 720px;
+
+    margin: 20px auto;
+
+    text-align: left;
+}
+
+
+.answer-card {
+
+    padding: 25px;
+
+    background:
+        rgba(255,255,255,.88);
+
+    border:
+        1px solid
+        #e4deef;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(91,75,120,.08);
+
+    line-height: 1.7;
+}
+
+
+.answer-card h2,
+.answer-card h3 {
+
+    color: #604b91;
+}
+
+
+.answer-card ul,
+.answer-card ol {
+
+    padding-left: 25px;
+}
+
+
+.answer-card code {
+
+    background: #f1ecfa;
+
+    padding: 2px 6px;
+
+    border-radius: 5px;
+}
+
+
+/* =========================
+   STUDY MODE BUTTON
+========================= */
+
+.study-mode-section {
+
+    margin: 10px auto 25px;
+
+    text-align: center;
+}
+
+
+.study-mode-button {
+
+    padding: 14px 28px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.8);
+
+    border-radius: 16px;
 
     cursor: pointer;
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
+    font-size: 16px;
 
+    font-weight: 700;
 
-.controls select:hover,
-.controls input:hover {
-    border-color: #b9a9d9;
-}
-
-
-.controls select:focus,
-.controls input:focus {
-    border-color: #a996d2;
-
-    box-shadow:
-        0 0 0 3px rgba(169, 150, 210, 0.15);
-}
-
-
-/* ==========================================
-   ANSWER AREA
-========================================== */
-
-#answer {
-    width: 100%;
-
-    margin-top: 28px;
-
-    box-sizing: border-box;
-}
-
-
-/* ==========================================
-   NORMAL NOTES
-========================================== */
-
-.normal-note-page {
-    width: 90%;
-    max-width: 720px;
-
-    margin: 28px auto;
-
-    padding: 34px 38px;
-
-    box-sizing: border-box;
-
-    text-align: left;
+    color: #55436f;
 
     background:
-        rgba(255, 255, 255, 0.94);
+        linear-gradient(
+            135deg,
+            #e8ddff,
+            #f8e3f0
+        );
+
+    box-shadow:
+        0 8px 22px
+        rgba(93,75,140,.15);
+
+    transition:
+        .2s ease;
+}
+
+
+.study-mode-button:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 12px 28px
+        rgba(93,75,140,.2);
+}
+
+
+/* =========================
+   STUDY MODE
+========================= */
+
+.study-mode {
+
+    width: 90%;
+
+    max-width: 720px;
+
+    margin: 25px auto;
+
+    padding: 25px;
+
+    background:
+        rgba(255,255,255,.78);
 
     border:
-        1px solid #ebe5f3;
+        1px solid
+        #e1dced;
 
     border-radius: 20px;
 
-    line-height: 1.7;
-
-    color: #40394b;
-
     box-shadow:
-        0 12px 35px rgba(72, 59, 95, 0.1);
-
-    animation:
-        noteAppear 0.4s ease;
+        0 10px 30px
+        rgba(91,75,120,.1);
 }
 
 
-@keyframes noteAppear {
+.study-mode h2 {
+
+    margin-top: 0;
+
+    color: #604b91;
+}
+
+
+.study-subtitle {
+
+    color: #7a7189;
+}
+
+
+/* =========================
+   STUDY NAVIGATION
+========================= */
+
+.study-steps {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    margin: 25px 0;
+}
+
+
+.study-step {
+
+    padding: 10px 15px;
+
+    border:
+        1px solid
+        #ddd6eb;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #665879;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+        .2s ease;
+}
+
+
+.study-step:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        #b9a9d9;
+}
+
+
+.study-step.active {
+
+    background:
+        #e9ddff;
+
+    color:
+        #59447d;
+
+    border-color:
+        #cbb9ed;
+}
+
+
+/* =========================
+   STUDY CONTENT
+========================= */
+
+.study-step-content {
+
+    animation:
+        studyStepAppear .25s ease;
+}
+
+
+@keyframes studyStepAppear {
 
     from {
+
         opacity: 0;
-        transform: translateY(12px);
+
+        transform:
+            translateY(6px);
     }
 
     to {
+
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
 }
 
 
-.normal-note-page h1 {
-    font-size: 28px;
+.study-topic-box {
 
-    color: #604b91;
+    display: flex;
 
-    text-shadow: none;
-}
-
-
-.normal-note-page h2 {
-    color: #69558f;
+    gap: 10px;
 
     margin-top: 20px;
 }
 
 
-.normal-note-page h3 {
-    color: #75619a;
+.study-topic-box input {
 
-    margin-top: 18px;
+    flex: 1;
+
+    padding: 13px 15px;
+
+    border:
+        1px solid
+        #ddd6eb;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    outline: none;
 }
 
 
-.normal-note-page h1,
-.normal-note-page h2,
-.normal-note-page h3 {
-    margin-bottom: 10px;
+.study-topic-box input:focus {
+
+    border-color:
+        #b7a5e5;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(183,165,229,.15);
 }
 
 
-.normal-note-page strong {
-    color: #5a467e;
+.study-topic-box button {
+
+    padding: 13px 20px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    background:
+        #e9ddff;
+
+    color:
+        #59447d;
+
+    font-weight: 700;
 }
 
 
-.normal-note-page .list-item {
-    margin: 5px 0;
+.study-topic-box button:hover {
 
-    padding-left: 8px;
+    background:
+        #dfd0ff;
 }
 
 
-/* ==========================================
-   PAGE NUMBER
-========================================== */
+/* =========================
+   STUDY RESULT
+========================= */
 
-.note-page-number {
-    text-align: right;
+#studyResult {
 
-    font-size: 13px;
-
-    color: #9991a5;
-
-    margin-bottom: 15px;
-
-    font-weight: 600;
-
-    letter-spacing: 0.4px;
+    margin-top: 25px;
 }
 
 
-/* ==========================================
-   HANDWRITTEN NOTE BASE
-========================================== */
+.study-learn-card {
 
-.handwritten-note {
-    width: 90%;
-    max-width: 720px;
+    margin-top: 25px;
 
-    min-height: 500px;
-
-    margin: 32px auto;
-
-    padding: 42px;
-
-    box-sizing: border-box;
+    padding: 25px;
 
     text-align: left;
 
-    border-left: 7px solid #e28b9b;
+    background:
+        rgba(255,255,255,.9);
 
-    border-radius: 5px 12px 12px 5px;
+    border:
+        1px solid
+        #ebe5f3;
 
-    box-shadow:
-        5px 8px 22px rgba(74, 62, 78, 0.16);
-
-    font-size: 20px;
+    border-radius: 16px;
 
     line-height: 1.7;
-
-    color: #164f91;
-
-    transform: rotate(-0.3deg);
-
-    position: relative;
-
-    animation:
-        handwrittenAppear 0.45s ease;
 }
 
 
-@keyframes handwrittenAppear {
+.study-learn-card h3 {
 
-    from {
-        opacity: 0;
-        transform:
-            translateY(12px)
-            rotate(-0.3deg);
-    }
+    color:
+        #604b91;
 
-    to {
-        opacity: 1;
-        transform:
-            translateY(0)
-            rotate(-0.3deg);
-    }
+    margin-top: 0;
 }
 
 
-/* ==========================================
-   HANDWRITTEN HEADINGS
-========================================== */
+.study-empty-card {
 
-.handwritten-note h1,
-.handwritten-note h2,
-.handwritten-note h3 {
-    margin-top: 15px;
+    margin-top: 20px;
+
+    padding: 30px 20px;
+
+    text-align: center;
+
+    background:
+        rgba(255,255,255,.8);
+
+    border:
+        1px dashed
+        #d7cdea;
+
+    border-radius: 16px;
+
+    color: #81768f;
+}
+
+
+.study-empty-card span {
+
+    display: block;
+
+    font-size: 32px;
 
     margin-bottom: 10px;
-
-    color: #123f78;
-
-    text-decoration: underline;
-
-    text-decoration-thickness: 1px;
 }
 
 
-.handwritten-note strong {
-    color: #123f78;
-}
-
-
-.handwritten-note .list-item {
-    margin-left: 10px;
-
-    padding-left: 5px;
-}
-
-
-/* ==========================================
-   HANDWRITTEN PAGE NUMBER
-========================================== */
-
-.handwritten-note .note-page-number {
-    text-align: right;
-
-    color: #777;
-
-    font-size: 14px;
-
-    margin-bottom: 15px;
-}
-
-
-/* ==========================================
-   BACKGROUND 1 — LINED PAPER
-   KEEP FUNCTIONALITY
-========================================== */
-
-.background-lined {
-
-    background-color: #fffdf3;
-
-    background-image:
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 31px,
-            #b8d4ea 32px
-        );
-}
-
-
-/* ==========================================
-   BACKGROUND 2 — PLAIN PAPER
-========================================== */
-
-.background-plain {
-
-    background-color: #fffdf3;
-
-    background-image: none;
-}
-
-
-/* ==========================================
-   BACKGROUND 3 — GRID PAPER
-========================================== */
-
-.background-grid {
-
-    background-color: #fffdf3;
-
-    background-image:
-        linear-gradient(
-            #d5e3ef 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            #d5e3ef 1px,
-            transparent 1px
-        );
-
-    background-size: 25px 25px;
-}
-
-
-/* ==========================================
-   BACKGROUND 4 — YELLOW NOTEBOOK
-========================================== */
-
-.background-yellow {
-
-    background-color: #fff4a8;
-
-    background-image:
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 31px,
-            #d8c76b 32px
-        );
-}
-
-
-/* ==========================================
-   5 HANDWRITING FONTS
-   KEEP ALL 5 WORKING
-========================================== */
-
-
-/* 1. Caveat */
-
-.font-caveat {
-
-    font-family:
-        "Caveat",
-        "Segoe Print",
-        cursive;
-
-    font-size: 22px;
-}
-
-
-/* 2. Kalam */
-
-.font-kalam {
-
-    font-family:
-        "Kalam",
-        "Comic Sans MS",
-        cursive;
-
-    font-size: 20px;
-}
-
-
-/* 3. Patrick Hand */
-
-.font-patrick {
-
-    font-family:
-        "Patrick Hand",
-        "Segoe Print",
-        cursive;
-
-    font-size: 21px;
-}
-
-
-/* 4. Indie Flower */
-
-.font-indie {
-
-    font-family:
-        "Indie Flower",
-        "Comic Sans MS",
-        cursive;
-
-    font-size: 20px;
-}
-
-
-/* 5. Shadows Into Light */
-
-.font-shadows {
-
-    font-family:
-        "Shadows Into Light",
-        "Segoe Print",
-        cursive;
-
-    font-size: 21px;
-}
-
-
-/* ==========================================
-   MOBILE RESPONSIVE DESIGN
-========================================== */
-
-@media (max-width: 600px) {
-
-    body {
-        padding:
-            30px 12px 45px;
-    }
-
-
-    h1 {
-        font-size: 32px;
-    }
-
-
-    body > p {
-        font-size: 14px;
-
-        margin-bottom: 25px;
-    }
-
-
-    #question {
-        width: 95%;
-
-        font-size: 15px;
-    }
-
-
-    .main-buttons {
-        gap: 9px;
-    }
-
-
-    .main-buttons button {
-        padding:
-            10px 15px;
-
-        font-size: 14px;
-    }
-
-
-    .controls {
-        width: 95%;
-
-        padding: 15px 12px;
-
-        gap: 9px;
-    }
-
-
-    .controls label {
-        font-size: 13px;
-    }
-
-
-    .controls select,
-    .controls input {
-        max-width: 100%;
-
-        padding:
-            8px 10px;
-    }
-
-
-    .normal-note-page {
-        width: 95%;
-
-        padding:
-            25px 22px;
-
-        border-radius: 16px;
-    }
-
-
-    .handwritten-note {
-        width: 95%;
-
-        min-height: 450px;
-
-        padding:
-            30px 25px;
-
-        font-size: 18px;
-    }
-}
-/* ==========================================
+/* =========================
    DIAGRAM
-========================================== */
+========================= */
 
 .note-diagram {
+
     width: 100%;
 
     margin: 25px auto;
@@ -799,9 +721,12 @@ body > p {
 
     text-align: center;
 
-    background: rgba(255, 255, 255, 0.75);
+    background:
+        rgba(255,255,255,.75);
 
-    border: 1px solid #e1dced;
+    border:
+        1px solid
+        #e1dced;
 
     border-radius: 14px;
 
@@ -809,17 +734,12 @@ body > p {
 }
 
 
-.note-diagram svg {
-    max-width: 100%;
-    height: auto;
-}
-
-
-/* ==========================================
-   PDF BUTTON AREA
-========================================== */
+/* =========================
+   PDF BUTTON
+========================= */
 
 .pdf-button-container {
+
     width: 90%;
 
     max-width: 720px;
@@ -835,272 +755,302 @@ body > p {
 
 
 .pdf-button {
-    padding: 11px 20px;
+
+    padding: 12px 22px;
 
     border: none;
 
     border-radius: 12px;
 
-    background: #e9ddff;
-
-    color: #59447d;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
     cursor: pointer;
 
-    box-shadow:
-        0 5px 15px rgba(90, 70, 125, 0.12);
+    background:
+        linear-gradient(
+            135deg,
+            #e7ddff,
+            #f8e4f0
+        );
 
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    color: #584674;
+
+    font-weight: 700;
 }
 
 
 .pdf-button:hover {
-    transform: translateY(-2px);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================
+   HANDWRITTEN NOTES
+========================= */
+
+.handwritten-page {
+
+    width: 100%;
+
+    min-height: 900px;
+
+    margin: 25px auto;
+
+    padding: 60px;
+
+    text-align: left;
+
+    border-radius: 5px;
 
     box-shadow:
-        0 8px 20px rgba(90, 70, 125, 0.18);
-}
+        0 10px 25px
+        rgba(0,0,0,.12);
 
+    overflow: hidden;
 
-/* ==========================================
-   PDF PRINT FRIENDLY
-========================================== */
-
-.pdf-page {
-    page-break-inside: avoid;
-}
-
-
-/* ==========================================
-   HANDWRITTEN DIAGRAM
-========================================== */
-
-.handwritten-note .note-diagram {
-
-    background: rgba(255, 255, 255, 0.55);
-
-    border:
-        1px dashed #9bb7d3;
-
-    border-radius: 8px;
-}
-
-
-/* ==========================================
-   MOBILE
-========================================== */
-
-@media (max-width: 600px) {
-
-    .pdf-button-container {
-        width: 95%;
-    }
-
-    .pdf-button {
-        width: 100%;
-    }
-
-}
-/* ============================= */
-/* STUDY MODE */
-/* ============================= */
-
-.study-mode-section {
-    margin: 10px auto 25px;
-    text-align: center;
-}
-
-.study-mode-button {
-    padding: 14px 28px;
-    border: 1px solid rgba(255,255,255,.8);
-    border-radius: 16px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 700;
-    color: #55436f;
-    background: linear-gradient(
-        135deg,
-        #e8ddff,
-        #f8e3f0
-    );
-    box-shadow: 0 8px 22px rgba(93,75,140,.15);
-    transition: .2s ease;
-}
-
-.study-mode-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(93,75,140,.2);
-}
-
-.study-mode {
-    width: 90%;
-    max-width: 720px;
-    margin: 25px auto;
-    padding: 25px;
-    box-sizing: border-box;
-    background: rgba(255,255,255,.78);
-    border: 1px solid #e1dced;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(91,75,120,.1);
-}
-
-.study-mode h2 {
-    margin-top: 0;
-    color: #604b91;
-}
-
-.study-mode > p {
-    color: #7a7189;
-}
-
-.study-topic-box {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.study-topic-box input {
-    flex: 1;
-    padding: 13px 15px;
-    border: 1px solid #ddd6eb;
-    border-radius: 12px;
-    font-size: 15px;
-    outline: none;
-}
-
-.study-topic-box button {
-    padding: 13px 20px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    background: #e9ddff;
-    color: #59447d;
-    font-weight: 700;
-}
-
-.study-result {
-    margin-top: 25px;
-}
-
-.study-learn-card {
-    margin-top: 25px;
-    padding: 25px;
-    text-align: left;
-    background: rgba(255,255,255,.9);
-    border-radius: 16px;
-    border: 1px solid #ebe5f3;
     line-height: 1.7;
 }
 
-.study-learn-card h3 {
-    color: #604b91;
+
+/* BACKGROUNDS */
+
+.bg-lined {
+
+    background-color:
+        #fffef9;
+
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 31px,
+            #cbd5e1 32px
+        );
 }
 
-@media (max-width:600px) {
 
-    .study-mode {
-        width: 95%;
-        padding: 20px;
-    }
+.bg-plain {
 
-    .study-topic-box {
-        flex-direction: column;
-    }
-
-    .study-topic-box button {
-        width: 100%;
-    }
-}
-.practice-section {
-    width: 90%;
-    max-width: 720px;
-    margin: 25px auto;
-    padding: 25px;
-    box-sizing: border-box;
-    text-align: left;
-    background: rgba(255,255,255,.78);
-    border: 1px solid #e1dced;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(91,75,120,.1);
+    background:
+        #fffef9;
 }
 
-.practice-section h3 {
-    margin-top: 0;
-    color: #604b91;
+
+.bg-grid {
+
+    background-color:
+        #fffef9;
+
+    background-image:
+        linear-gradient(
+            #dbe2ea 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            #dbe2ea 1px,
+            transparent 1px
+        );
+
+    background-size:
+        25px 25px;
+}
+
+
+.bg-yellow {
+
+    background-color:
+        #fff8c9;
+
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 31px,
+            #e7d98b 32px
+        );
+}
+
+
+/* FONTS */
+
+.font-caveat {
+
+    font-family:
+        "Caveat",
+        cursive;
+
+    font-size: 25px;
+}
+
+
+.font-kalam {
+
+    font-family:
+        "Kalam",
+        cursive;
+
+    font-size: 22px;
+}
+
+
+.font-patrick {
+
+    font-family:
+        "Patrick Hand",
+        cursive;
+
     font-size: 23px;
 }
 
-.practice-section > p {
-    color: #766f86;
+
+.font-indie {
+
+    font-family:
+        "Indie Flower",
+        cursive;
+
+    font-size: 23px;
 }
 
-.practice-start-button {
-    padding: 11px 20px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    background: #e9ddff;
-    color: #59447d;
-    font-weight: 700;
+
+.font-shadows {
+
+    font-family:
+        "Shadows Into Light",
+        cursive;
+
+    font-size: 22px;
 }
 
-.practice-question {
-    margin-top: 22px;
-    padding: 20px;
-    background: rgba(255,255,255,.9);
-    border: 1px solid #ebe5f3;
-    border-radius: 15px;
-}
 
-.practice-question h4 {
-    margin-top: 0;
-    color: #5d4b8c;
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
-.practice-answer {
-    width: 100%;
-    min-height: 90px;
-    margin-top: 12px;
-    padding: 12px;
-    box-sizing: border-box;
-    resize: vertical;
-    border: 1px solid #ddd6eb;
-    border-radius: 10px;
-    font-family: "Segoe UI", Arial, sans-serif;
-    font-size: 14px;
-    outline: none;
-}
+@media (max-width: 600px) {
 
-.practice-check-button {
-    margin-top: 10px;
-    padding: 10px 17px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #eee7ff;
-    color: #59447d;
-    font-weight: 600;
-}
+    body {
 
-.practice-feedback {
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: 10px;
-    background: #f8f5ff;
-    line-height: 1.6;
-}
+        padding:
+            30px 12px 45px;
+    }
 
-@media (max-width:600px) {
 
-    .practice-section {
+    h1 {
+
+        font-size: 34px;
+    }
+
+
+    #question {
+
         width: 95%;
+    }
+
+
+    .main-buttons button {
+
+        width: 90%;
+    }
+
+
+    .controls {
+
+        width: 95%;
+
+        flex-direction: column;
+    }
+
+
+    .controls select,
+    .controls input {
+
+        width: 100%;
+    }
+
+
+    .study-mode {
+
+        width: 95%;
+
         padding: 20px;
     }
 
+
+    .study-steps {
+
+        gap: 6px;
+    }
+
+
+    .study-step {
+
+        flex:
+            1 1 45%;
+
+        font-size: 13px;
+
+        padding:
+            9px 8px;
+    }
+
+
+    .study-topic-box {
+
+        flex-direction:
+            column;
+    }
+
+
+    .study-topic-box button {
+
+        width: 100%;
+    }
+
+
+    .handwritten-page {
+
+        min-height: 700px;
+
+        padding: 35px 25px;
+    }
+}
+
+
+/* =========================
+   PRINT
+========================= */
+
+@media print {
+
+    body {
+
+        background: white;
+
+        padding: 0;
+    }
+
+    body > * {
+
+        display: none !important;
+    }
+
+    #answer {
+
+        display: block !important;
+
+        width: 100%;
+
+        max-width: none;
+
+        margin: 0;
+    }
+
+    .handwritten-page {
+
+        box-shadow: none;
+
+        page-break-after: always;
+    }
 }
