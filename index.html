@@ -7,7 +7,7 @@
 
     <title>StudySphere</title>
 
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 
 <body>
@@ -15,59 +15,192 @@
     <h1>🤖 StudySphere</h1>
     <p>Your personal study helper</p>
 
+    <!-- MAIN QUESTION -->
     <input
         type="text"
         id="question"
         placeholder="Ask a study question..."
     >
-<div class="study-mode-section">
-    <button
-    class="study-mode-button"
-    onclick="document.getElementById('studyMode').classList.remove('hidden')"
->
-    🎯 Study Mode
-</button>
-</div>
+
+    <!-- STUDY MODE BUTTON -->
+    <div class="study-mode-section">
+        <button
+            class="study-mode-button"
+            onclick="openStudyMode()"
+        >
+            🎯 Study Mode
+        </button>
+    </div>
+
+    <!-- =========================
+         STUDY MODE
+    ========================== -->
+
     <div id="studyMode" class="study-mode hidden">
 
-    <h2>🎯 Study Mode</h2>
+        <h2>🎯 Study Mode</h2>
 
-    <p>Learn → Practice → Test → Revise</p>
+        <p class="study-subtitle">
+            Learn → Practice → Test → Revise
+        </p>
 
-    <div class="study-topic-box">
+        <!-- STUDY NAVIGATION -->
 
-        <input
-            type="text"
-            id="studyTopic"
-            placeholder="Enter a topic to study..."
+        <div class="study-steps">
+
+            <button
+                class="study-step active"
+                onclick="showStudyStep('learn')"
+            >
+                📚 Learn
+            </button>
+
+            <button
+                class="study-step"
+                onclick="showStudyStep('practice')"
+            >
+                🧠 Practice
+            </button>
+
+            <button
+                class="study-step"
+                onclick="showStudyStep('test')"
+            >
+                ❓ Test
+            </button>
+
+            <button
+                class="study-step"
+                onclick="showStudyStep('revise')"
+            >
+                🔄 Revise
+            </button>
+
+        </div>
+
+        <!-- LEARN -->
+
+        <div
+            id="studyLearnStep"
+            class="study-step-content"
         >
 
-        <button onclick="studyLearn()">
-            📚 Learn
-        </button>
+            <h3>📚 Learn</h3>
+
+            <p>
+                Enter a topic and learn it in simple,
+                exam-oriented language.
+            </p>
+
+            <div class="study-topic-box">
+
+                <input
+                    type="text"
+                    id="studyTopic"
+                    placeholder="Enter a topic to study..."
+                >
+
+                <button onclick="studyLearn()">
+                    📚 Learn
+                </button>
+
+            </div>
+
+            <div id="studyResult"></div>
+
+        </div>
+
+
+        <!-- PRACTICE -->
+
+        <div
+            id="studyPracticeStep"
+            class="study-step-content hidden"
+        >
+
+            <h3>🧠 Practice</h3>
+
+            <p>
+                Practice questions for your selected topic
+                will appear here.
+            </p>
+
+            <div id="practiceResult">
+
+                <div class="study-empty-card">
+                    <span>🧠</span>
+                    <p>
+                        Complete the Learn step first,
+                        then practice the topic.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TEST -->
+
+        <div
+            id="studyTestStep"
+            class="study-step-content hidden"
+        >
+
+            <h3>❓ Test</h3>
+
+            <p>
+                Test yourself after learning the topic.
+            </p>
+
+            <div id="testResult">
+
+                <div class="study-empty-card">
+                    <span>❓</span>
+                    <p>
+                        Your test will appear here.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REVISE -->
+
+        <div
+            id="studyReviseStep"
+            class="study-step-content hidden"
+        >
+
+            <h3>🔄 Revise</h3>
+
+            <p>
+                Quickly revise the important points
+                before your exam.
+            </p>
+
+            <div id="reviseResult">
+
+                <div class="study-empty-card">
+                    <span>🔄</span>
+                    <p>
+                        Your revision material will appear here.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <div id="studyResult"></div>
-     <div id="practiceSection" class="practice-section hidden">
 
-    <h3>🧠 Practice</h3>
+    <!-- =========================
+         MAIN BUTTONS
+    ========================== -->
 
-    <p>Test your understanding before taking the final test.</p>
-
-    <button
-        class="practice-start-button"
-        onclick="startPractice()"
-    >
-        Start Practice
-    </button>
-
-    <div id="practiceContent"></div>
-
-</div>
-</div>
-    
-    
     <div class="main-buttons">
 
         <button onclick="askAI()">
@@ -85,20 +218,44 @@
     </div>
 
 
-    <!-- NOTES CONTROLS -->
+    <!-- =========================
+         NOTES CONTROLS
+    ========================== -->
 
-    <div id="notesControls" class="controls hidden">
+    <div
+        id="notesControls"
+        class="controls hidden"
+    >
 
-        <label>Page Number:</label>
+        <label>
+            Page Number:
+        </label>
 
         <select id="notesPageNumber">
 
-            <option value="1">1 Page</option>
-            <option value="2">2 Pages</option>
-            <option value="3">3 Pages</option>
-            <option value="4">4 Pages</option>
-            <option value="5">5 Pages</option>
-            <option value="custom">Custom</option>
+            <option value="1">
+                1 Page
+            </option>
+
+            <option value="2">
+                2 Pages
+            </option>
+
+            <option value="3">
+                3 Pages
+            </option>
+
+            <option value="4">
+                4 Pages
+            </option>
+
+            <option value="5">
+                5 Pages
+            </option>
+
+            <option value="custom">
+                Custom
+            </option>
 
         </select>
 
@@ -111,30 +268,64 @@
             class="hidden"
         >
 
-    <label>Include Diagram:</label>
 
-<select id="notesDiagram">
-    <option value="no">No</option>
-    <option value="yes">Yes</option>
-</select>
-        
+        <label>
+            Include Diagram:
+        </label>
+
+        <select id="notesDiagram">
+
+            <option value="no">
+                No
+            </option>
+
+            <option value="yes">
+                Yes
+            </option>
+
+        </select>
+
     </div>
 
 
-    <!-- HANDWRITTEN CONTROLS -->
+    <!-- =========================
+         HANDWRITTEN CONTROLS
+    ========================== -->
 
-    <div id="handwrittenControls" class="controls hidden">
+    <div
+        id="handwrittenControls"
+        class="controls hidden"
+    >
 
-        <label>Page Number:</label>
+        <label>
+            Page Number:
+        </label>
 
         <select id="handwrittenPageNumber">
 
-            <option value="1">1 Page</option>
-            <option value="2">2 Pages</option>
-            <option value="3">3 Pages</option>
-            <option value="4">4 Pages</option>
-            <option value="5">5 Pages</option>
-            <option value="custom">Custom</option>
+            <option value="1">
+                1 Page
+            </option>
+
+            <option value="2">
+                2 Pages
+            </option>
+
+            <option value="3">
+                3 Pages
+            </option>
+
+            <option value="4">
+                4 Pages
+            </option>
+
+            <option value="5">
+                5 Pages
+            </option>
+
+            <option value="custom">
+                Custom
+            </option>
 
         </select>
 
@@ -148,7 +339,9 @@
         >
 
 
-        <label>Page Background:</label>
+        <label>
+            Page Background:
+        </label>
 
         <select id="pageBackground">
 
@@ -171,7 +364,9 @@
         </select>
 
 
-        <label>Font:</label>
+        <label>
+            Font:
+        </label>
 
         <select id="handwrittenFont">
 
@@ -194,26 +389,43 @@
             <option value="shadows">
                 Shadows Into Light
             </option>
-    
-        </select>
-        <label>Include Diagram:</label>
 
-<select id="handwrittenDiagram">
-    <option value="no">No</option>
-    <option value="yes">Yes</option>
-</select>
+        </select>
+
+
+        <label>
+            Include Diagram:
+        </label>
+
+        <select id="handwrittenDiagram">
+
+            <option value="no">
+                No
+            </option>
+
+            <option value="yes">
+                Yes
+            </option>
+
+        </select>
 
     </div>
 
 
+    <!-- =========================
+         ANSWER
+    ========================== -->
+
     <div id="answer"></div>
 
 
+    <!-- MERMAID -->
+
     <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- MAIN JAVASCRIPT -->
 
-<script src="script.js?v=17"></script>
+    <script src="script.js?v=18"></script>
 
 </body>
 
